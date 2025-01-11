@@ -21,7 +21,7 @@ import {useEffect, useState} from "react";
 import {useToast} from "@/hooks/use-toast";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {getFilaments, updateUsedFilament} from "@/actions/filaments";
+import {createFilament, getFilaments, updateUsedFilament} from "@/actions/filaments";
 import {CircleDot} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
@@ -72,6 +72,8 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
     const [step, setStep] = useState(0);
     const [processing, setProcessing] = useState(false);
 
+    const {toast} = useToast();
+
     const form = useForm<z.infer<typeof CreateFilamentSchema>>({
         resolver: zodResolver(CreateFilamentSchema),
         defaultValues: {
@@ -110,17 +112,47 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
     const onSubmit = async (values: z.infer<typeof CreateFilamentSchema>) => {
         try {
-            setProcessing(true);
+            setProcessing(true)
 
-            const result = await createFilament(values);
+            console.log(values)
 
-            setIsOpen(false);
-            onUpdate?.();
+            const result = await createFilament({
+                type: values.type,
+                manufacturerId: values.manufacturerId,
+                name: values.name,
+                color: values.color,
+                colorHex: values.colorHex,
+                colorPantone: values.colorPantone,
+                weight: values.weight,
+                restWeight: values.restWeight ?? values.weight,
+                status: values.status,
+                openedAt: values.openedAt,
+                boughtAt: values.boughtAt,
+                emptyAt: values.emptyAt,
+                link: values.link,
+            })
+
+            if (!result.success) {
+                console.log(result.error)
+                throw new Error(result.error)
+            }
+
+            setIsOpen(false)
+            form.reset()
+            toast({
+                title: "Filament erstellt",
+                description: `Du hast ${values.name} erstellt`,
+            })
+            onUpdate?.()
         } catch (error) {
-            console.error("Create filament error:", error);
-            setError("Failed to create filament");
+            toast({
+                title: "Filament konnte nicht erstellt werden",
+                description: "Es ist ein Fehler aufgetreten",
+                variant: "destructive"
+            })
+            console.log(error)
         } finally {
-            setProcessing(false);
+            setProcessing(false)
         }
     }
 
@@ -501,6 +533,7 @@ const FilamentCard = ({filament, onUpdate}: {
             }
 
             setOpen(false)
+            form.reset()
             toast({
                 title: "Filament aktualisiert",
                 description: `Du hast ${values.usedWeight}g von ${filament.name} genutzt`,
@@ -520,7 +553,7 @@ const FilamentCard = ({filament, onUpdate}: {
     return (
         <Card className="relative overflow-hidden">
             <CircleDot size={128} color={filament.colorHex ? filament.colorHex : "#ffffff"}
-                       className={cn("absolute top-8 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 rounded-full")}/>
+                       className={cn("absolute top-8 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
             <CardHeader>
                 <CardTitle>{filament.name} - #{filament.id}</CardTitle>
                 <CardDescription>{filament.type} - {filament.manufacturerId}</CardDescription>

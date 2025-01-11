@@ -1,4 +1,4 @@
-import {integer, pgTable, timestamp, varchar} from "drizzle-orm/pg-core";
+import {integer, pgTable, timestamp, uuid, varchar} from "drizzle-orm/pg-core";
 
 export type Filament = typeof filamentsTable.$inferSelect;
 export type Manufacturer = typeof manufacturersTable.$inferSelect;
@@ -27,4 +27,5 @@ export const filamentsTable = pgTable("filaments", {
     createdAt: timestamp().defaultNow().notNull(),
     emptyAt: timestamp(),
     link: varchar({ length: 255 }),
+    code: uuid(),
 });

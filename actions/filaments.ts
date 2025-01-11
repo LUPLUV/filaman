@@ -4,6 +4,18 @@ import db from '@/db/index'
 import { filamentsTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
+export async function createFilament(filament: typeof filamentsTable.$inferInsert) {
+    try {
+        await db
+            .insert(filamentsTable)
+            .values(filament)
+
+        return { success: true }
+    } catch {
+        return { success: false, error: 'Failed to create filament' }
+    }
+}
+
 export async function updateUsedFilament(
     filamentId: number,
     usedWeight: number,
