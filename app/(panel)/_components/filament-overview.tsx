@@ -453,7 +453,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                     value={deviceId}
                                     defaultValue={devices[0]?.deviceId}
                                 >
-                                    <SelectTrigger className="w-[180px]">
+                                    <SelectTrigger>
                                         <SelectValue placeholder="Select device"/>
                                     </SelectTrigger>
                                     <SelectContent>
