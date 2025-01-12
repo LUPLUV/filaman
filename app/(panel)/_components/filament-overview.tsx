@@ -1,6 +1,6 @@
 "use client";
 
-import {Filament, filamentsTable, Manufacturer} from "@/db/schema";
+import {Filament, filamentsTable, Manufacturer, manufacturersTable} from "@/db/schema";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
@@ -58,7 +58,7 @@ export const FilamentOverview = () => {
     return (
         <div className="grid grid-cols-3 gap-4">
             {filaments.map((filament, index) => (
-                <FilamentCard key={index} filament={filament} onUpdate={onUpdate} showButtons/>
+                <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate} showButtons/>
             ))}
             <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
         </div>
@@ -82,6 +82,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
             manufacturerId: 1,
             name: "",
             color: "",
+            diameter: 175,
             weight: 0,
             status: "OPENED",
         }
@@ -127,6 +128,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                 color: values.color,
                 colorHex: values.colorHex,
                 colorPantone: values.colorPantone,
+                diameter: values.diameter,
                 weight: values.weight,
                 restWeight: values.restWeight ?? values.weight,
                 status: values.status,
@@ -524,8 +526,9 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
     )
 }
 
-export const FilamentCard = ({filament, onUpdate, showButtons}: {
+export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
     filament: typeof filamentsTable.$inferSelect;
+    manufacturers: typeof manufacturersTable.$inferSelect[];
     onUpdate?: () => void;
     showButtons?: boolean;
 }) => {
@@ -581,7 +584,7 @@ export const FilamentCard = ({filament, onUpdate, showButtons}: {
                        className={cn("absolute top-14 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
             <CardHeader>
                 <CardTitle>{filament.name} - #{filament.id}</CardTitle>
-                <CardDescription>{filament.type} - {filament.manufacturerId}</CardDescription>
+                <CardDescription>{filament.type} - {manufacturers.find((man) => man.id == filament.manufacturerId)?.name}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
                 <p>Farbe: <Badge>{filament.color}</Badge></p>
