@@ -71,6 +71,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
     const [error, setError] = useState<string>();
     const [step, setStep] = useState(0);
     const [processing, setProcessing] = useState(false);
+    const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
     const {toast} = useToast();
 
@@ -88,14 +89,17 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
     useEffect(() => {
         if (step == 1) {
-            navigator.mediaDevices.getUserMedia({video: true})
-                .then(() => {
-                    setHasPermission(true)
+            navigator.mediaDevices.enumerateDevices()
+                .then(availableDevices => {
+                    const videoDevices = availableDevices.filter(
+                        device => device.kind === 'videoinput'
+                    );
+                    setDevices(videoDevices);
+                    setHasPermission(videoDevices.length > 0);
                 })
-                .catch((err) => {
-                    console.error("Camera permission error:", err);
-                    setError("Please grant camera permission to scan QR codes");
-                    setHasPermission(false);
+                .catch(err => {
+                    console.error("Error getting devices:", err);
+                    setError(err.message);
                 });
         }
     }, [step]);
@@ -414,7 +418,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                                 <FormMessage/>
                                             </FormItem>
                                         )}
-                                        />
+                                    />
                                     <FormField
                                         control={form.control}
                                         name="boughtAt"
@@ -465,30 +469,43 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                             </Form>
                         )}
                         {hasPermission && step == 1 && (
-                            <div className="space-y-4">
-                                <Scanner
-                                    onScan={(codes) => {
-                                        if (codes?.[0]?.rawValue) {
-                                            handleScan(codes[0].rawValue);
-                                        }
-                                    }}
-                                    onError={(err) => {
-                                        console.error("Scanner error:", err);
+                            <Scanner
+                                constraints={{
+                                    // Start with basic constraints
+                                    facingMode: "environment",
+                                    // Only add deviceId if devices are available
+                                    ...(devices.length > 0 && {
+                                        deviceId: devices[0].deviceId
+                                    })
+                                }}
+                                onScan={(codes) => {
+                                    if (codes?.[0]?.rawValue) {
+                                        handleScan(codes[0].rawValue);
+                                    }
+                                }}
+                                onError={(err) => {
+                                    console.error("Scanner error:", err);
+                                    if (err === 'OverconstrainedError') {
+                                        // Fall back to basic constraints
+                                        setDevices([]); // This will trigger a re-render with just facingMode
+                                    } else {
                                         setError("Scanner error: " + err);
-                                    }}
-                                    styles={{
-                                        container: {
-                                            width: "100%",
-                                        }
-                                    }}
-                                />
-                            </div>
+                                    }
+                                }}
+                                styles={{
+                                    container: {
+                                        width: '100%',
+                                        maxWidth: '500px'
+                                    }
+                                }}
+                            />
                         )}
                         {step === 2 && (
                             <Alert>
                                 <CheckCircle className="w-6 h-6 mr-2"/>
                                 <AlertTitle>QR Code wurde gescannt</AlertTitle>
-                                <AlertDescription>Klicke auf bestätigen um die Registrierung abzuschließen</AlertDescription>
+                                <AlertDescription>Klicke auf bestätigen um die Registrierung
+                                    abzuschließen</AlertDescription>
                             </Alert>
                         )}
                         <DialogFooter>
