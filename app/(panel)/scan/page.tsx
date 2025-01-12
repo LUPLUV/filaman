@@ -16,6 +16,8 @@ import {Button} from "@/components/ui/button";
 import {FilamentCard} from "@/app/(panel)/_components/filament-overview";
 import {cn} from "@/lib/utils";
 import {Separator} from "@/components/ui/separator";
+import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import {AlertCircle} from "lucide-react";
 
 export default function ScanPage() {
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -59,9 +61,11 @@ export default function ScanPage() {
             setFilament(filaments[0]);
             setStep(1);
         } catch (error) {
-            console.error("Scan error:", error);
-            console.error(data)
-            setError("Failed to process QR code");
+            if(error instanceof Error) {
+                console.error("Scan error:", error);
+                console.error(data)
+                setError(error.message);
+            }
         }
     };
 
@@ -137,7 +141,7 @@ export default function ScanPage() {
                         {error && (
                             <div className="text-red-500 mb-4">{error}</div>
                         )}
-                        {hasPermission && step == 0 && (
+                        {hasPermission && step == 0 && !error && (
                             <Scanner
                                 constraints={{
                                     // Start with basic constraints
@@ -169,7 +173,7 @@ export default function ScanPage() {
                                 }}
                             />
                         )}
-                        {step == 1 && (
+                        {step == 1 && !error && (
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)}>
                                     <FormField
@@ -215,13 +219,26 @@ export default function ScanPage() {
                                 </form>
                             </Form>
                         )}
+                        {error && (
+                            <Alert>
+                                <AlertCircle className="w-6 h-6 text-red-500"/>
+                                <AlertTitle>Etwas ist schiefgelaufen</AlertTitle>
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
                     </CardContent>
                     <CardFooter className="gap-4">
-                        {step == 1 && (
+                        {step == 1 && !error && (
                             <>
                                 <Button variant="secondary" onClick={() => setStep(0)}>Zurück</Button>
                                 <Button onClick={form.handleSubmit(onSubmit)} disabled={processing}>Bestätigen</Button>
                             </>
+                        )}
+                        {error && (
+                            <Button variant="outline" onClick={() => {
+                                setError(undefined)
+                                setStep(0)
+                            }}>Erneut versuchen</Button>
                         )}
                     </CardFooter>
                 </Card>
