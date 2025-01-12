@@ -25,7 +25,7 @@ import {createFilament, getFilaments, updateUsedFilament} from "@/actions/filame
 import {CheckCircle, CircleDot} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
-import {Scanner, useDevices} from "@yudiel/react-qr-scanner";
+import {Scanner} from "@yudiel/react-qr-scanner";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {getManufacturers} from "@/actions/manufacturers";
 import {DatePicker} from "@/app/(panel)/_components/date-picker";
