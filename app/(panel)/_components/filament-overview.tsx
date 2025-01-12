@@ -528,7 +528,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
 export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
     filament: typeof filamentsTable.$inferSelect;
-    manufacturers: typeof manufacturersTable.$inferSelect[];
+    manufacturers?: typeof manufacturersTable.$inferSelect[];
     onUpdate?: () => void;
     showButtons?: boolean;
 }) => {
@@ -584,7 +584,7 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
                        className={cn("absolute top-14 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
             <CardHeader>
                 <CardTitle>{filament.name} - #{filament.id}</CardTitle>
-                <CardDescription>{filament.type} - {manufacturers.find((man) => man.id == filament.manufacturerId)?.name}</CardDescription>
+                <CardDescription>{filament.type} - {manufacturers && manufacturers.find((man) => man.id == filament.manufacturerId)?.name}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
                 <p>Farbe: <Badge>{filament.color}</Badge></p>
