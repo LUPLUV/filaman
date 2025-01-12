@@ -53,8 +53,8 @@ export default function ScanPage() {
         try {
             const filaments: Filament[] = await getFilamentByCode(data);
             console.log(filaments);
-            if (!filaments) {
-                throw new Error("Filament not found");
+            if (!filaments || filaments.length === 0) {
+                throw new Error("Filament wurde nicht gefunden");
             }
             setFilament(filaments[0]);
             setStep(1);
