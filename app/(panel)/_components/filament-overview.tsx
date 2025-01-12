@@ -91,7 +91,10 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
     useEffect(() => {
         if (step == 1) {
             navigator.mediaDevices.getUserMedia({video: true})
-                .then(() => setHasPermission(true))
+                .then(() => {
+                    setHasPermission(true)
+                    setDeviceId(devices[0]?.deviceId)
+                })
                 .catch((err) => {
                     console.error("Camera permission error:", err);
                     setError("Please grant camera permission to scan QR codes");
@@ -177,7 +180,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                     <DialogTrigger>
                         <Button variant="outline">Neues Filament</Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl">
+                    <DialogContent className={cn("max-w-4xl", step === 1 && "max-w-md")}>
                         <DialogHeader>
                             <DialogTitle>Neues Filament</DialogTitle>
                             <DialogDescription>Trage ein neues Filament ein</DialogDescription>
@@ -448,6 +451,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                 <Select
                                     onValueChange={(value) => setDeviceId(value)}
                                     value={deviceId}
+                                    defaultValue={devices[0]?.deviceId}
                                 >
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select device"/>
@@ -462,7 +466,6 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
                                 <Scanner
                                     constraints={{
-                                        deviceId: deviceId,
                                         facingMode: "environment",
                                     }}
                                     onScan={(codes) => {
