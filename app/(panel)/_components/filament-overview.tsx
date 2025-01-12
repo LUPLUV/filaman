@@ -536,7 +536,6 @@ export const FilamentCard = ({filament, onUpdate, showButtons}: {
     const form = useForm<z.infer<typeof UsageSchema>>({
         resolver: zodResolver(UsageSchema),
         defaultValues: {
-            usedWeight: 0,
             usedAt: new Date(),
         }
     })
@@ -549,8 +548,8 @@ export const FilamentCard = ({filament, onUpdate, showButtons}: {
 
             const result = await updateUsedFilament(
                 filament.id,
-                values.usedWeight,
-                filament.restWeight
+                filament.restWeight,
+                values.usedWeight
             )
 
             if (!result.success) {
@@ -568,7 +567,7 @@ export const FilamentCard = ({filament, onUpdate, showButtons}: {
         } catch {
             toast({
                 title: "Error",
-                description: "Failed to update filament usage",
+                description: "Filament konnte nicht aktualisiert werden",
                 variant: "destructive"
             })
         } finally {
@@ -579,31 +578,31 @@ export const FilamentCard = ({filament, onUpdate, showButtons}: {
     return (
         <Card className="relative overflow-hidden">
             <CircleDot size={128} color={filament.colorHex ? filament.colorHex : "#ffffff"}
-                       className={cn("absolute top-8 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
+                       className={cn("absolute top-14 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
             <CardHeader>
                 <CardTitle>{filament.name} - #{filament.id}</CardTitle>
                 <CardDescription>{filament.type} - {filament.manufacturerId}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
                 <p>Farbe: <Badge>{filament.color}</Badge></p>
-                <p>Weight: <Badge>{filament.weight}g</Badge></p>
-                <p>Rest weight: <Badge>{filament.restWeight}g</Badge></p>
+                <p>Gewicht (volle Spule): <Badge>{filament.weight}g</Badge></p>
+                <p>Restgewicht: <Badge>{filament.restWeight}g</Badge></p>
                 <p>Status: <Badge>{filament.status}</Badge></p>
-                <p>Benutzt: <Progress value={filament.restWeight / filament.weight * 100}/></p>
+                <p>Nutzung: <Progress value={filament.restWeight / filament.weight * 100}/></p>
             </CardContent>
             {showButtons && (
                 <CardFooter className="gap-4">
-                    <Link href={`/filament/${filament.id}`}>
+                    <Link href="#">
                         <Button variant="secondary">Details</Button>
                     </Link>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger>
-                            <Button>Add usage</Button>
+                            <Button>Nutzung angeben</Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Track Filament Usage</DialogTitle>
-                                <DialogDescription>{filament.name} - {filament.type}</DialogDescription>
+                                <DialogTitle>Gib genutztes Filament an</DialogTitle>
+                                <DialogDescription>{filament.name}</DialogDescription>
                             </DialogHeader>
                             <Form {...form}>
                                 <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -612,12 +611,12 @@ export const FilamentCard = ({filament, onUpdate, showButtons}: {
                                         name="usedWeight"
                                         render={({field}) => (
                                             <FormItem>
-                                                <FormLabel>Used weight</FormLabel>
+                                                <FormLabel>Genutztes Gewicht</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         {...field}
                                                         type="number"
-                                                        placeholder="Used weight"
+                                                        placeholder="42"
                                                         disabled={processing}
                                                     />
                                                 </FormControl>
@@ -630,7 +629,7 @@ export const FilamentCard = ({filament, onUpdate, showButtons}: {
                             </Form>
                             <DialogFooter>
                                 <Button onClick={form.handleSubmit(onSubmit)}
-                                        disabled={processing}>Submit</Button>
+                                        disabled={processing}>Bestätigen</Button>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>

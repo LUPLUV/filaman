@@ -1,7 +1,8 @@
 import {z} from "zod";
 
 export const UsageSchema = z.object({
-    usedWeight: z.coerce.number(),
+    restWeight: z.coerce.number().positive().optional(),
+    usedWeight: z.coerce.number().positive().optional(),
     usedAt: z.date(),
 })
 

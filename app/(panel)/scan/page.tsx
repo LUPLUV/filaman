@@ -15,6 +15,7 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {FilamentCard} from "@/app/(panel)/_components/filament-overview";
 import {cn} from "@/lib/utils";
+import {Separator} from "@/components/ui/separator";
 
 export default function ScanPage() {
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -69,15 +70,24 @@ export default function ScanPage() {
             setProcessing(true)
 
             if (!filament) {
-                throw new Error("Filament not found")
+                throw new Error("Filament wurde nicht gefunden")
+            }
+
+            if(values.usedWeight && values.restWeight) {
+                throw new Error("Bitte gib entweder das Restgewicht oder das genutzte Gewicht an")
+            }
+
+            if(values.restWeight && values.restWeight >= filament.restWeight) {
+                throw new Error("Restgewicht kann nicht größer als das aktuelle Gewicht sein")
             }
 
             console.log(values)
 
             const result = await updateUsedFilament(
                 filament.id,
+                filament.restWeight,
                 values.usedWeight,
-                filament.restWeight
+                values.restWeight
             )
 
             if (!result.success) {
@@ -90,14 +100,17 @@ export default function ScanPage() {
             setError(undefined)
             toast({
                 title: "Filament aktualisiert",
-                description: `Du hast ${values.usedWeight}g von ${filament.name} genutzt`,
+                description: `Du hast ${values.usedWeight ? values.usedWeight : values.restWeight && filament.restWeight - values.restWeight}g von ${filament.name} genutzt`,
             })
-        } catch {
-            toast({
-                title: "Error",
-                description: "Failed to update filament usage",
-                variant: "destructive"
-            })
+        } catch (err) {
+            if(err instanceof Error) {
+                toast({
+                    title: "Filament konnte nicht aktualisiert werden",
+                    description: err.message,
+                    variant: "destructive"
+                })
+                console.log("Failed to update filament usage: " + err.message)
+            }
         } finally {
             setProcessing(false)
         }
@@ -161,6 +174,27 @@ export default function ScanPage() {
                                 <form onSubmit={form.handleSubmit(onSubmit)}>
                                     <FormField
                                         control={form.control}
+                                        name="restWeight"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Rest Gewicht (Spule)</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        autoFocus
+                                                        type="number"
+                                                        placeholder="643"
+                                                        disabled={processing}
+                                                    />
+                                                </FormControl>
+                                                <FormDescription/>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <Separator className="my-4"/>
+                                    <FormField
+                                        control={form.control}
                                         name="usedWeight"
                                         render={({field}) => (
                                             <FormItem>
@@ -168,7 +202,6 @@ export default function ScanPage() {
                                                 <FormControl>
                                                     <Input
                                                         {...field}
-                                                        autoFocus
                                                         type="number"
                                                         placeholder="26"
                                                         disabled={processing}
@@ -186,7 +219,7 @@ export default function ScanPage() {
                     <CardFooter className="gap-4">
                         {step == 1 && (
                             <>
-                                <Button value="secondary" onClick={() => setStep(0)}>Zurück</Button>
+                                <Button variant="secondary" onClick={() => setStep(0)}>Zurück</Button>
                                 <Button onClick={form.handleSubmit(onSubmit)} disabled={processing}>Bestätigen</Button>
                             </>
                         )}

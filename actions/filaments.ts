@@ -18,14 +18,18 @@ export async function createFilament(filament: typeof filamentsTable.$inferInser
 
 export async function updateUsedFilament(
     filamentId: number,
-    usedWeight: number,
-    currentWeight: number
+    currentWeight: number,
+    usedWeight?: number,
+    restWeight?: number
 ) {
     try {
+        if (usedWeight && restWeight === undefined) {
+            restWeight = currentWeight - usedWeight
+        }
         await db
             .update(filamentsTable)
             .set({
-                restWeight: currentWeight - usedWeight
+                restWeight: restWeight
             })
             .where(eq(filamentsTable.id, filamentId))
 

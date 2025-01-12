@@ -8,8 +8,8 @@ export const Navigation = () => {
                 FilaMan
             </h2>
             <ul className="flex gap-8">
-                <NavigationItem href="/">Filaments</NavigationItem>
-                <NavigationItem href="/scan">Scan</NavigationItem>
+                <NavigationItem href="/">Filamente</NavigationItem>
+                <NavigationItem href="/scan">Scannen</NavigationItem>
             </ul>
             <ThemeToggle/>
         </nav>
