@@ -67,7 +67,6 @@ export const FilamentOverview = () => {
 
 const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacturer[]; onUpdate?: () => void }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [deviceId, setDeviceId] = useState<string | undefined>(undefined);
     const [hasPermission, setHasPermission] = useState(false);
     const [error, setError] = useState<string>();
     const [step, setStep] = useState(0);
@@ -94,7 +93,6 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
             navigator.mediaDevices.getUserMedia({video: true})
                 .then(() => {
                     setHasPermission(true)
-                    setDeviceId(devices[0]?.deviceId)
                 })
                 .catch((err) => {
                     console.error("Camera permission error:", err);
@@ -470,22 +468,6 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                         )}
                         {hasPermission && step == 1 && (
                             <div className="space-y-4">
-                                <Select
-                                    onValueChange={(value) => setDeviceId(value)}
-                                    value={deviceId}
-                                    defaultValue={devices[0]?.deviceId}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select device"/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {devices.map((device) => (
-                                            <SelectItem key={device.deviceId}
-                                                        value={device.deviceId}>{device.label}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-
                                 <Scanner
                                     constraints={{
                                         facingMode: "environment",
