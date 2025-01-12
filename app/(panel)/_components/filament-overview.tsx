@@ -58,7 +58,7 @@ export const FilamentOverview = () => {
     return (
         <div className="grid grid-cols-3 gap-4">
             {filaments.map((filament, index) => (
-                <FilamentCard key={index} filament={filament} onUpdate={onUpdate}/>
+                <FilamentCard key={index} filament={filament} onUpdate={onUpdate} showButtons/>
             ))}
             <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
         </div>
@@ -524,9 +524,10 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
     )
 }
 
-const FilamentCard = ({filament, onUpdate}: {
+export const FilamentCard = ({filament, onUpdate, showButtons}: {
     filament: typeof filamentsTable.$inferSelect;
-    onUpdate?: () => void
+    onUpdate?: () => void;
+    showButtons?: boolean;
 }) => {
     const [open, setOpen] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -590,49 +591,51 @@ const FilamentCard = ({filament, onUpdate}: {
                 <p>Status: <Badge>{filament.status}</Badge></p>
                 <p>Benutzt: <Progress value={filament.restWeight / filament.weight * 100}/></p>
             </CardContent>
-            <CardFooter className="gap-4">
-                <Link href={`/filament/${filament.id}`}>
-                    <Button variant="secondary">Details</Button>
-                </Link>
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger>
-                        <Button>Add usage</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Track Filament Usage</DialogTitle>
-                            <DialogDescription>{filament.name} - {filament.type}</DialogDescription>
-                        </DialogHeader>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)}>
-                                <FormField
-                                    control={form.control}
-                                    name="usedWeight"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Used weight</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    type="number"
-                                                    placeholder="Used weight"
-                                                    disabled={processing}
-                                                />
-                                            </FormControl>
-                                            <FormDescription/>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                            </form>
-                        </Form>
-                        <DialogFooter>
-                            <Button onClick={form.handleSubmit(onSubmit)}
-                                    disabled={processing}>Submit</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </CardFooter>
+            {showButtons && (
+                <CardFooter className="gap-4">
+                    <Link href={`/filament/${filament.id}`}>
+                        <Button variant="secondary">Details</Button>
+                    </Link>
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogTrigger>
+                            <Button>Add usage</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Track Filament Usage</DialogTitle>
+                                <DialogDescription>{filament.name} - {filament.type}</DialogDescription>
+                            </DialogHeader>
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onSubmit)}>
+                                    <FormField
+                                        control={form.control}
+                                        name="usedWeight"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Used weight</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="number"
+                                                        placeholder="Used weight"
+                                                        disabled={processing}
+                                                    />
+                                                </FormControl>
+                                                <FormDescription/>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </form>
+                            </Form>
+                            <DialogFooter>
+                                <Button onClick={form.handleSubmit(onSubmit)}
+                                        disabled={processing}>Submit</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </CardFooter>
+            )}
         </Card>
     )
 }

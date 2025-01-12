@@ -1,4 +1,5 @@
 import {ThemeToggle} from "@/components/theme-toggle";
+import Link from "next/link";
 
 export const Navigation = () => {
     return (
@@ -7,11 +8,20 @@ export const Navigation = () => {
                 FilaMan
             </h2>
             <ul className="flex gap-8">
-                <li>Filaments</li>
-                <li>Order</li>
-                <li>Settings</li>
+                <NavigationItem href="/">Filaments</NavigationItem>
+                <NavigationItem href="/scan">Scan</NavigationItem>
             </ul>
             <ThemeToggle/>
         </nav>
+    );
+}
+
+const NavigationItem = ({children, href}: {children: React.ReactNode, href: string}) => {
+    return (
+        <li>
+            <Link href={href} className="font-bold">
+                {children}
+            </Link>
+        </li>
     );
 }

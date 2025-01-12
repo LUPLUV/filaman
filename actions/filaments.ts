@@ -38,3 +38,7 @@ export async function updateUsedFilament(
 export async function getFilaments() {
     return db.select().from(filamentsTable).orderBy(filamentsTable.createdAt)
 }
+
+export async function getFilamentByCode(code: string) {
+    return db.select().from(filamentsTable).where(eq(filamentsTable.code, code))
+}
