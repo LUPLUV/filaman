@@ -22,13 +22,14 @@ import {useToast} from "@/hooks/use-toast";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {createFilament, getFilaments, updateUsedFilament} from "@/actions/filaments";
-import {CircleDot} from "lucide-react";
+import {CheckCircle, CircleDot} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
 import {Scanner, useDevices} from "@yudiel/react-qr-scanner";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {getManufacturers} from "@/actions/manufacturers";
 import {DatePicker} from "@/app/(panel)/_components/date-picker";
+import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 
 export const FilamentOverview = () => {
     const [filaments, setFilaments] = useState<Filament[]>([]);
@@ -105,8 +106,8 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
     const handleScan = async (data: string) => {
         try {
-            alert(`QR Code scanned: ${data}`);
-            setIsOpen(false); // Close dialog after successful scan
+            form.setValue("code", data);
+            setStep(2);
         } catch (error) {
             console.error("Scan error:", error);
             setError("Failed to process QR code");
@@ -133,6 +134,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                 boughtAt: values.boughtAt,
                 emptyAt: values.emptyAt,
                 link: values.link,
+                code: values.code,
             })
 
             if (!result.success) {
@@ -142,6 +144,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
             setIsOpen(false)
             form.reset()
+            setStep(0)
             toast({
                 title: "Filament erstellt",
                 description: `Du hast ${values.name} erstellt`,
@@ -505,6 +508,13 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                 />
                             </div>
                         )}
+                        {step === 2 && (
+                            <Alert>
+                                <CheckCircle className="w-6 h-6 mr-2"/>
+                                <AlertTitle>QR Code wurde gescannt</AlertTitle>
+                                <AlertDescription>Klicke auf bestätigen um die Registrierung abzuschließen</AlertDescription>
+                            </Alert>
+                        )}
                         <DialogFooter>
                             {step == 0 && (
                                 <Button onClick={() => setStep(1)}>QR Code verknüpfen</Button>
@@ -512,7 +522,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                             {step == 1 && (
                                 <Button onClick={() => setStep(0)}>Zurück</Button>
                             )}
-                            <Button onClick={form.handleSubmit(onSubmit)} disabled={processing}>Submit</Button>
+                            <Button onClick={form.handleSubmit(onSubmit)} disabled={processing}>Bestätigen</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

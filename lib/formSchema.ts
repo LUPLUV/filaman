@@ -23,4 +23,5 @@ export const CreateFilamentSchema = z.object({
     boughtAt: z.date().optional(),
     emptyAt: z.date().optional(),
     link: z.string().url().optional(),
+    code: z.string().uuid().optional(),
 })
