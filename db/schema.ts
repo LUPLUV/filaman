@@ -19,6 +19,7 @@ export const filamentsTable = pgTable("filaments", {
     color: varchar({ length: 255 }).notNull(),
     colorHex: varchar({ length: 255 }),
     colorPantone: varchar({ length: 255 }),
+    diameter: integer(),
     weight: integer().notNull(),
     restWeight: integer().notNull(),
     status: varchar({ length: 255 }).notNull(),

@@ -15,6 +15,7 @@ export const CreateFilamentSchema = z.object({
     color: z.string(),
     colorHex: z.string().optional(),
     colorPantone: z.string().optional(),
+    diameter: z.coerce.number().optional(),
     weight: z.coerce.number(),
     restWeight: z.coerce.number().optional(),
     status: z.string(),

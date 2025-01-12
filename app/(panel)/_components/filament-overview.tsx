@@ -320,6 +320,25 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                     />
                                     <FormField
                                         control={form.control}
+                                        name="diameter"
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Durchmesser</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="number"
+                                                        placeholder="175"
+                                                        disabled={processing}
+                                                    />
+                                                </FormControl>
+                                                <FormDescription/>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
                                         name="weight"
                                         render={({field}) => (
                                             <FormItem>
