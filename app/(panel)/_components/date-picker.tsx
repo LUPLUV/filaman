@@ -12,7 +12,7 @@ export const DatePicker = ({onValueChange, value}: {onValueChange: (value: Date 
                 <Button
                     variant={"outline"}
                     className={cn(
-                        "w-[280px] justify-start text-left font-normal",
+                        "w-full justify-start text-left font-normal",
                         !value && "text-muted-foreground"
                     )}
                 >
@@ -20,7 +20,7 @@ export const DatePicker = ({onValueChange, value}: {onValueChange: (value: Date 
                     {value ? format(value, "PPP") : <span>Wähle ein Datum</span>}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-full">
                 <Calendar
                     mode="single"
                     selected={value}

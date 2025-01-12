@@ -56,9 +56,10 @@ export const FilamentOverview = () => {
     }, []);
 
     return (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filaments.map((filament, index) => (
-                <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate} showButtons/>
+                <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
+                              showButtons/>
             ))}
             <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
         </div>
@@ -185,340 +186,341 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                     <DialogTrigger>
                         <Button variant="outline">Neues Filament</Button>
                     </DialogTrigger>
-                    <DialogContent className={cn("max-w-4xl", step === 1 && "max-w-md")}>
-                        <DialogHeader>
-                            <DialogTitle>Neues Filament</DialogTitle>
-                            <DialogDescription>Trage ein neues Filament ein</DialogDescription>
-                        </DialogHeader>
-                        {error && (
-                            <div className="text-red-500 mb-4">{error}</div>
-                        )}
-                        {step == 0 && (
-                            <Form {...form}>
-                                <form className="grid grid-cols-3 gap-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="type"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Filament Art</FormLabel>
-                                                <FormControl>
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        value={field.value}
-                                                        disabled={processing}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue/>
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {FilamentTypes.map((type) => (
-                                                                <SelectItem key={type} value={type}>{type}</SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="manufacturerId"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Hersteller</FormLabel>
-                                                <FormControl>
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        value={field.value.toString()}
-                                                        disabled={processing}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue/>
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {manufacturers.map((manufacturer) => (
-                                                                <SelectItem key={manufacturer.id}
-                                                                            value={manufacturer.id.toString()}>{manufacturer.name}</SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Name</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="PLA Rot Cool"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="color"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Farbe</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="Rot"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="colorHex"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Hexcode</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="#ffffff"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="colorPantone"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Pantone</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="Mocha Mousse"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="diameter"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Durchmesser</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        type="number"
-                                                        placeholder="175"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="weight"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Gewicht (volle Spule)</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        type="number"
-                                                        placeholder="1000"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="restWeight"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Rest Gewicht</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="400"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="status"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Status</FormLabel>
-                                                <FormControl>
-                                                    <Select
-                                                        onValueChange={field.onChange}
-                                                        value={field.value}
-                                                        disabled={processing}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue/>
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {FilamentStatus.map((status) => (
-                                                                <SelectItem key={status}
-                                                                            value={status}>{status}</SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="openedAt"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Geöffnet am</FormLabel>
-                                                <FormControl>
-                                                    <DatePicker onValueChange={field.onChange} value={field.value}/>
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="boughtAt"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Gekauft am</FormLabel>
-                                                <FormControl>
-                                                    <DatePicker onValueChange={field.onChange} value={field.value}/>
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="emptyAt"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Leer am</FormLabel>
-                                                <FormControl>
-                                                    <DatePicker onValueChange={field.onChange} value={field.value}/>
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="link"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Link zum Produkt</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="https://example.com"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                </form>
-                            </Form>
-                        )}
-                        {hasPermission && step == 1 && (
-                            <Scanner
-                                constraints={{
-                                    // Start with basic constraints
-                                    facingMode: "environment",
-                                    // Only add deviceId if devices are available
-                                    ...(devices.length > 0 && {
-                                        deviceId: devices[0].deviceId
-                                    })
-                                }}
-                                onScan={(codes) => {
-                                    if (codes?.[0]?.rawValue) {
-                                        handleScan(codes[0].rawValue);
-                                    }
-                                }}
-                                onError={(err) => {
-                                    console.error("Scanner error:", err);
-                                    if (err === 'OverconstrainedError') {
-                                        // Fall back to basic constraints
-                                        setDevices([]); // This will trigger a re-render with just facingMode
-                                    } else {
-                                        setError("Scanner error: " + err);
-                                    }
-                                }}
-                                styles={{
-                                    container: {
-                                        width: '100%',
-                                        maxWidth: '500px'
-                                    }
-                                }}
-                            />
-                        )}
-                        {step === 2 && (
-                            <Alert>
-                                <CheckCircle className="w-6 h-6 mr-2"/>
-                                <AlertTitle>QR Code wurde gescannt</AlertTitle>
-                                <AlertDescription>Klicke auf bestätigen um die Registrierung
-                                    abzuschließen</AlertDescription>
-                            </Alert>
-                        )}
-                        <DialogFooter>
+                    <DialogContent className={cn("max-w-4xl max-h-screen overflow-scroll", step === 1 && "max-w-md")}>
+                            <DialogHeader>
+                                <DialogTitle>Neues Filament</DialogTitle>
+                                <DialogDescription>Trage ein neues Filament ein</DialogDescription>
+                            </DialogHeader>
+                            {error && (
+                                <div className="text-red-500 mb-4">{error}</div>
+                            )}
                             {step == 0 && (
-                                <Button onClick={() => setStep(1)}>QR Code verknüpfen</Button>
+                                <Form {...form}>
+                                    <form className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="type"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Filament Art</FormLabel>
+                                                    <FormControl>
+                                                        <Select
+                                                            onValueChange={field.onChange}
+                                                            value={field.value}
+                                                            disabled={processing}
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue/>
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {FilamentTypes.map((type) => (
+                                                                    <SelectItem key={type}
+                                                                                value={type}>{type}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="manufacturerId"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Hersteller</FormLabel>
+                                                    <FormControl>
+                                                        <Select
+                                                            onValueChange={field.onChange}
+                                                            value={field.value.toString()}
+                                                            disabled={processing}
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue/>
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {manufacturers.map((manufacturer) => (
+                                                                    <SelectItem key={manufacturer.id}
+                                                                                value={manufacturer.id.toString()}>{manufacturer.name}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="name"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="PLA Rot Cool"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="color"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Farbe</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Rot"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="colorHex"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Hexcode</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="#ffffff"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="colorPantone"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Pantone</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Mocha Mousse"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="diameter"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Durchmesser</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            type="number"
+                                                            placeholder="175"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="weight"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Gewicht (volle Spule)</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            type="number"
+                                                            placeholder="1000"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="restWeight"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Rest Gewicht</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="400"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="status"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Status</FormLabel>
+                                                    <FormControl>
+                                                        <Select
+                                                            onValueChange={field.onChange}
+                                                            value={field.value}
+                                                            disabled={processing}
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue/>
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {FilamentStatus.map((status) => (
+                                                                    <SelectItem key={status}
+                                                                                value={status}>{status}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="openedAt"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Geöffnet am</FormLabel>
+                                                    <FormControl>
+                                                        <DatePicker onValueChange={field.onChange} value={field.value}/>
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="boughtAt"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Gekauft am</FormLabel>
+                                                    <FormControl>
+                                                        <DatePicker onValueChange={field.onChange} value={field.value}/>
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="emptyAt"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Leer am</FormLabel>
+                                                    <FormControl>
+                                                        <DatePicker onValueChange={field.onChange} value={field.value}/>
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="link"
+                                            render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Link zum Produkt</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="https://example.com"
+                                                            disabled={processing}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription/>
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </form>
+                                </Form>
                             )}
-                            {step == 1 && (
-                                <Button onClick={() => setStep(0)}>Zurück</Button>
+                            {hasPermission && step == 1 && (
+                                <Scanner
+                                    constraints={{
+                                        // Start with basic constraints
+                                        facingMode: "environment",
+                                        // Only add deviceId if devices are available
+                                        ...(devices.length > 0 && {
+                                            deviceId: devices[0].deviceId
+                                        })
+                                    }}
+                                    onScan={(codes) => {
+                                        if (codes?.[0]?.rawValue) {
+                                            handleScan(codes[0].rawValue);
+                                        }
+                                    }}
+                                    onError={(err) => {
+                                        console.error("Scanner error:", err);
+                                        if (err === 'OverconstrainedError') {
+                                            // Fall back to basic constraints
+                                            setDevices([]); // This will trigger a re-render with just facingMode
+                                        } else {
+                                            setError("Scanner error: " + err);
+                                        }
+                                    }}
+                                    styles={{
+                                        container: {
+                                            width: '100%',
+                                            maxWidth: '500px'
+                                        }
+                                    }}
+                                />
                             )}
-                            <Button onClick={form.handleSubmit(onSubmit)} disabled={processing}>Bestätigen</Button>
-                        </DialogFooter>
+                            {step === 2 && (
+                                <Alert>
+                                    <CheckCircle className="w-6 h-6 mr-2"/>
+                                    <AlertTitle>QR Code wurde gescannt</AlertTitle>
+                                    <AlertDescription>Klicke auf bestätigen um die Registrierung
+                                        abzuschließen</AlertDescription>
+                                </Alert>
+                            )}
+                            <DialogFooter className="gap-4">
+                                {step == 0 && (
+                                    <Button onClick={() => setStep(1)}>QR Code verknüpfen</Button>
+                                )}
+                                {step == 1 && (
+                                    <Button variant="secondary" onClick={() => setStep(0)}>Zurück</Button>
+                                )}
+                                <Button onClick={form.handleSubmit(onSubmit)} disabled={processing}>Bestätigen</Button>
+                            </DialogFooter>
                     </DialogContent>
                 </Dialog>
             </CardFooter>
@@ -579,7 +581,7 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
     }
 
     return (
-        <Card className="relative overflow-hidden">
+        <Card className="relative min-w-96 overflow-hidden">
             <CircleDot size={128} color={filament.colorHex ? filament.colorHex : "#ffffff"}
                        className={cn("absolute top-14 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
             <CardHeader>

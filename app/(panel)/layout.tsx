@@ -4,9 +4,9 @@ export default function PanelLayout ({children}: {
     children: React.ReactNode
 }) {
     return (
-        <main className="w-full min-h-screen">
+        <main className="mx-4 sm:mx-8 md:mx-10 min-h-screen">
             <Navigation/>
-            <div className="mx-10 mt-10">
+            <div className="mt-10">
             {children}
             </div>
         </main>

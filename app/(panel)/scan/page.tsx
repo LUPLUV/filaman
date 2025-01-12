@@ -122,7 +122,7 @@ export default function ScanPage() {
 
     return (
         <div className="w-full h-full flex justify-center items-center">
-            <div className={cn("grid gap-4", step == 1 && "grid-cols-2")}>
+            <div className={cn("w-full md:w-auto grid gap-4", step == 1 && "md:grid-cols-2")}>
                 <Card>
                     <CardHeader>
                         {step == 0 ? (
