@@ -467,9 +467,6 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                         {hasPermission && step == 1 && (
                             <div className="space-y-4">
                                 <Scanner
-                                    constraints={{
-                                        facingMode: "environment",
-                                    }}
                                     onScan={(codes) => {
                                         if (codes?.[0]?.rawValue) {
                                             handleScan(codes[0].rawValue);
@@ -482,7 +479,6 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                     styles={{
                                         container: {
                                             width: "100%",
-                                            minHeight: "300px",
                                         }
                                     }}
                                 />
