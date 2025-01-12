@@ -86,8 +86,6 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
         }
     })
 
-    const devices = useDevices();
-
     useEffect(() => {
         if (step == 1) {
             navigator.mediaDevices.getUserMedia({video: true})
