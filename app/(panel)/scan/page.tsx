@@ -26,6 +26,7 @@ export default function ScanPage() {
     const [step, setStep] = useState(0);
     const [processing, setProcessing] = useState(false);
     const [filament, setFilament] = useState<Filament>();
+    const [costs, setCosts] = useState<number>(0.00);
 
     const {toast} = useToast();
 
@@ -35,6 +36,12 @@ export default function ScanPage() {
             usedAt: new Date(),
         }
     })
+
+    const [usedWeight, restWeight] = form.watch(["usedWeight", "restWeight"]);
+
+    useEffect(() => {
+        setCosts(usedWeight ? 0.1 * usedWeight! : restWeight ? 0.1 * (filament!.restWeight - restWeight!) : 0)
+    }, [usedWeight, restWeight]);
 
     useEffect(() => {
         navigator.mediaDevices.enumerateDevices()
@@ -61,7 +68,7 @@ export default function ScanPage() {
             setFilament(filaments[0]);
             setStep(1);
         } catch (error) {
-            if(error instanceof Error) {
+            if (error instanceof Error) {
                 console.error("Scan error:", error);
                 console.error(data)
                 setError(error.message);
@@ -77,11 +84,11 @@ export default function ScanPage() {
                 throw new Error("Filament wurde nicht gefunden")
             }
 
-            if(values.usedWeight && values.restWeight) {
+            if (values.usedWeight && values.restWeight) {
                 throw new Error("Bitte gib entweder das Restgewicht oder das genutzte Gewicht an")
             }
 
-            if(values.restWeight && values.restWeight >= filament.restWeight) {
+            if (values.restWeight && values.restWeight >= filament.restWeight) {
                 throw new Error("Restgewicht kann nicht größer als das aktuelle Gewicht sein")
             }
 
@@ -107,7 +114,7 @@ export default function ScanPage() {
                 description: `Du hast ${values.usedWeight ? values.usedWeight : values.restWeight && filament.restWeight - values.restWeight}g von ${filament.name} genutzt`,
             })
         } catch (err) {
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 toast({
                     title: "Filament konnte nicht aktualisiert werden",
                     description: err.message,
@@ -216,6 +223,10 @@ export default function ScanPage() {
                                             </FormItem>
                                         )}
                                     />
+                                    <div className="bg-muted p-4 rounded-lg font-bold mt-4">
+                                        <span
+                                            className="text-muted-foreground">Kosten (Extern/Mitglied):</span> {(costs*2).toFixed(2)}€ / {(costs).toFixed(2)}€
+                                    </div>
                                 </form>
                             </Form>
                         )}
