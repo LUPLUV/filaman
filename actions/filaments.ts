@@ -46,14 +46,14 @@ export async function setRestFilament(
     try {
         console.log("Setting rest weight for filament with RFID:", rfid, "to", restWeight);
         const spool = await getFilamentByRfid(rfid);
-        if(spool) {
+        if(spool.length > 0) {
             console.log("Found spool with RFID:", rfid, " SPool:", spool);
             await db
                 .update(filamentsTable)
                 .set({
                     restWeight: restWeight
                 })
-                .where(or(eq(filamentsTable.rfid1, rfid), eq(filamentsTable.rfid2, rfid)));
+                .where(eq(filamentsTable.id, spool[0].id));
             return { success: true }
         }
 
