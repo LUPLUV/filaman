@@ -3,7 +3,7 @@ import Link from "next/link";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import {Menu} from "lucide-react";
-import {SignedIn, SignedOut, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
+import {SignedIn, UserButton} from "@clerk/nextjs";
 
 export const Navigation = () => {
     return (
