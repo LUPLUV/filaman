@@ -21,7 +21,7 @@ import {useToast} from "@/hooks/use-toast";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {createFilament, deleteFilament, getFilaments, updateUsedFilament} from "@/actions/filaments";
-import {CheckCircle, CircleDot, Grid2X2, LoaderCircle, Table2} from "lucide-react";
+import {CheckCircle, CircleDot, Grid2X2, Grid3X3, LoaderCircle, Table2, Trash} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
 import {Scanner} from "@yudiel/react-qr-scanner";
@@ -66,25 +66,26 @@ export const FilamentOverview = () => {
     ) : (
         <div className="space-y-4">
             <div className="flex w-fit">
-                <Select value={view} onValueChange={setView}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Ansicht"/>
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value={"cards"}><span className="flex gap-1 items-center mr-2">Kacheln<Grid2X2
-                            size={16}/></span></SelectItem>
-                        <SelectItem value={"table"}><span className="flex gap-1 items-center mr-2">Tabelle<Table2
-                            size={16}/></span></SelectItem>
-                    </SelectContent>
-                </Select>
+                <div className="bg-secondary p-1 flex gap-1 rounded-md">
+                    <div onClick={() => setView("cards")} className={cn("p-2 rounded-md cursor-pointer", view === "cards" && "bg-background")}><Grid2X2 size={16}/></div>
+                    <div onClick={() => setView("cardsmd")} className={cn("p-2 rounded-md cursor-pointer", view === "cardsmd" && "bg-background")}><Grid3X3 size={16}/></div>
+                    <div onClick={() => setView("table")} className={cn("p-2 rounded-md cursor-pointer", view === "table" && "bg-background")}><Table2 size={16}/></div>
+                </div>
             </div>
             {view === "cards" && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filaments.map((filament, index) => (
                         <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
-                                      showButtons/>
+                                      showButtons size="lg"/>
                     ))}
                     <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
+                </div>
+            )}
+            {view === "cardsmd" && (
+                <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {filaments.map((filament, index) => (
+                        <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate} size="md"/>
+                    ))}
                 </div>
             )}
             {view === "table" && (
@@ -556,11 +557,12 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
     )
 }
 
-export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
+export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons, size}: {
     filament: typeof filamentsTable.$inferSelect;
     manufacturers?: typeof manufacturersTable.$inferSelect[];
     onUpdate?: () => void;
     showButtons?: boolean;
+    size?: "sm" | "md" | "lg";
 }) => {
     const [open, setOpen] = useState(false);
     const [processing, setProcessing] = useState(false);
@@ -627,23 +629,23 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
     }
 
     return (
-        <Card className="relative min-w-96 overflow-hidden">
-            <CircleDot size={128} color={filament.colorHex ? filament.colorHex : "#ffffff"}
+        <Card className={cn("relative overflow-hidden", size === "lg" && "min-w-96")}>
+            <CircleDot size={size === "lg" ? 128 : 100} color={filament.colorHex ? filament.colorHex : "#ffffff"}
                        className={cn("absolute top-14 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
             <CardHeader>
-                <CardTitle>{filament.name} - #{filament.id}</CardTitle>
+                <CardTitle>{filament.name}{size === "lg" && <span> - #{filament.id}</span>}</CardTitle>
                 <CardDescription>{filament.type} - {manufacturers && manufacturers.find((man) => man.id == filament.manufacturerId)?.name}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
                 <p>Farbe: <Badge>{filament.color}</Badge></p>
-                <p>Gewicht (volle Spule): <Badge>{filament.weight}g</Badge></p>
+                {size === "lg" && <p>Gewicht (volle Spule): <Badge>{filament.weight}g</Badge></p>}
                 <p>Restgewicht: <Badge>{filament.restWeight}g</Badge></p>
-                <p>Status: <Badge>{filament.status}</Badge></p>
+                {size === "lg" && <p>Status: <Badge>{filament.status}</Badge></p>}
                 <p>Nutzung: <Progress value={filament.restWeight / (filament.weight ?? 100) * 100}/></p>
             </CardContent>
             {showButtons && (
                 <CardFooter className="gap-4">
-                    <Button variant="destructive" onClick={deleteFilamentLogic} disabled={processing}>Löschen</Button>
+                    <Button variant="destructive" size="icon" onClick={deleteFilamentLogic} disabled={processing}><Trash/></Button>
                     <FilamentDetailsDialog filament={filament} manufacturers={manufacturers ?? []}
                                            onUpdate={() => onUpdate?.()}/>
                     <Dialog open={open} onOpenChange={setOpen}>

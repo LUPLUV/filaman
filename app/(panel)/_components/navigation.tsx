@@ -14,7 +14,6 @@ export const Navigation = () => {
             </Link>
             <ul className="hidden sm:flex gap-8">
                 <NavigationItem href="/">Filamente</NavigationItem>
-                <NavigationItem href="/scan">Scannen</NavigationItem>
             </ul>
             <div className="hidden sm:block">
                 <ThemeToggle/>
