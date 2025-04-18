@@ -270,7 +270,16 @@ return (
                                 <FormItem>
                                     <FormLabel>Durchmesser</FormLabel>
                                     <FormControl>
-                                        <Input {...field} type="number" disabled={processing}/>
+                                        <Select defaultValue={"175"} onValueChange={field.onChange} value={field.value?.toString() ?? undefined} disabled={processing}>
+                                            <SelectTrigger>
+                                                <SelectValue/>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={"100"}>1.00 mm</SelectItem>
+                                                <SelectItem value={"175"}>1.75 mm</SelectItem>
+                                                <SelectItem value={"300"}>3.00 mm</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>
