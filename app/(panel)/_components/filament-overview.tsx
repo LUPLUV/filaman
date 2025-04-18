@@ -52,9 +52,8 @@ export const FilamentOverview = () => {
     }
 
     useEffect(() => {
-        loadFilaments();
         loadManufacturers();
-        setLoading(false);
+        loadFilaments().then(() => setLoading(false));
     }, []);
 
     return loading ? (
