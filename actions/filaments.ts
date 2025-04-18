@@ -1,7 +1,7 @@
 'use server'
 
 import db from '@/db/index'
-import {Filament, filamentsTable} from "@/db/schema"
+import {filamentsTable} from "@/db/schema"
 import {eq, or, isNull} from "drizzle-orm"
 
 export async function createFilament(filament: typeof filamentsTable.$inferInsert) {
@@ -33,14 +33,16 @@ export async function updateFilament(
     filament: typeof filamentsTable.$inferInsert
 ) {
     try {
+        console.log("Trying update", filamentId, filament);
         await db
             .update(filamentsTable)
             .set(filament)
-            .where(eq(filamentsTable.id, filamentId))
+            .where(eq(filamentsTable.id, filamentId));
+        console.log("Updated filament with ID:", filamentId, "to", filament);
 
         return { success: true }
-    } catch {
-        return { success: false, error: 'Failed to update filament' }
+    } catch(error) {
+        return { success: false, error: 'Failed to update filament', details: error }
     }
 }
 

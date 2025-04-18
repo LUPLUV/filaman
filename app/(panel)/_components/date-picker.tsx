@@ -20,7 +20,7 @@ export const DatePicker = ({onValueChange, value}: {onValueChange: (value: Date 
                     {value ? format(value, "PPP") : <span>Wähle ein Datum</span>}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full">
+            <PopoverContent className="w-auto p-0">
                 <Calendar
                     mode="single"
                     selected={value}
