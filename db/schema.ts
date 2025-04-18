@@ -34,7 +34,7 @@ export const manufacturersTable = pgTable("manufacturers", {
 export const filamentsTable = pgTable("filaments", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     type: varchar({ length: 255 }),
-    manufacturerId: integer().references(() => manufacturersTable.id).notNull(),
+    manufacturerId: integer().references(() => manufacturersTable.id),
     name: varchar({ length: 255 }),
     color: varchar({ length: 255 }),
     colorHex: varchar({ length: 255 }),
