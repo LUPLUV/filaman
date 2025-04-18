@@ -20,8 +20,8 @@ import {useEffect, useState} from "react";
 import {useToast} from "@/hooks/use-toast";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {createFilament, getFilaments, updateUsedFilament} from "@/actions/filaments";
-import {CheckCircle, CircleDot, LoaderCircle} from "lucide-react";
+import {createFilament, deleteFilament, getFilaments, updateUsedFilament} from "@/actions/filaments";
+import {CheckCircle, CircleDot, Grid2X2, LoaderCircle, Table2} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
 import {Scanner} from "@yudiel/react-qr-scanner";
@@ -30,11 +30,14 @@ import {getManufacturers} from "@/actions/manufacturers";
 import {DatePicker} from "@/app/(panel)/_components/date-picker";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
+import {FilamentTable} from "@/app/(panel)/_components/filament-table/filament-table";
+import {filamentTableColumns} from "@/app/(panel)/_components/filament-table/filament-table-columns";
 
 export const FilamentOverview = () => {
     const [filaments, setFilaments] = useState<Filament[]>([]);
     const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
     const [loading, setLoading] = useState(true);
+    const [view, setView] = useState("cards");
 
     const loadFilaments = async () => {
         const data = await getFilaments();
@@ -58,15 +61,35 @@ export const FilamentOverview = () => {
 
     return loading ? (
         <div className="w-full mt-40 flex justify-center items-center">
-            <LoaderCircle size={64} className="animate-spin" />
+            <LoaderCircle size={64} className="animate-spin"/>
         </div>
     ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filaments.map((filament, index) => (
-                <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
-                              showButtons/>
-            ))}
-            <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
+        <div className="space-y-4">
+            <div className="flex w-fit">
+                <Select value={view} onValueChange={setView}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Ansicht"/>
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value={"cards"}><span className="flex gap-1 items-center mr-2">Kacheln<Grid2X2
+                            size={16}/></span></SelectItem>
+                        <SelectItem value={"table"}><span className="flex gap-1 items-center mr-2">Tabelle<Table2
+                            size={16}/></span></SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            {view === "cards" && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filaments.map((filament, index) => (
+                        <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
+                                      showButtons/>
+                    ))}
+                    <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
+                </div>
+            )}
+            {view === "table" && (
+                <FilamentTable columns={filamentTableColumns(manufacturers)} data={filaments}/>
+            )}
         </div>
     )
 }
@@ -585,6 +608,24 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
         }
     }
 
+    const deleteFilamentLogic = async () => {
+        deleteFilament(filament.id)
+            .then(() => {
+                toast({
+                    title: "Filament gelöscht",
+                    description: `Du hast ${filament.name} gelöscht`,
+                })
+                onUpdate?.()
+            })
+            .catch(() => {
+                toast({
+                    title: "Error",
+                    description: "Filament konnte nicht gelöscht werden",
+                    variant: "destructive"
+                })
+            });
+    }
+
     return (
         <Card className="relative min-w-96 overflow-hidden">
             <CircleDot size={128} color={filament.colorHex ? filament.colorHex : "#ffffff"}
@@ -602,7 +643,9 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
             </CardContent>
             {showButtons && (
                 <CardFooter className="gap-4">
-                    <FilamentDetailsDialog filament={filament} manufacturers={manufacturers ?? []}/>
+                    <Button variant="destructive" onClick={deleteFilamentLogic} disabled={processing}>Löschen</Button>
+                    <FilamentDetailsDialog filament={filament} manufacturers={manufacturers ?? []}
+                                           onUpdate={() => onUpdate?.()}/>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger>
                             <Button>Nutzung angeben</Button>
