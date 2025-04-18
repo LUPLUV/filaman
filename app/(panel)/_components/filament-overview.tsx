@@ -598,7 +598,7 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
                 <p>Gewicht (volle Spule): <Badge>{filament.weight}g</Badge></p>
                 <p>Restgewicht: <Badge>{filament.restWeight}g</Badge></p>
                 <p>Status: <Badge>{filament.status}</Badge></p>
-                <p>Nutzung: <Progress value={filament.restWeight / filament.weight * 100}/></p>
+                <p>Nutzung: <Progress value={filament.restWeight / (filament.weight ?? 100) * 100}/></p>
             </CardContent>
             {showButtons && (
                 <CardFooter className="gap-4">
