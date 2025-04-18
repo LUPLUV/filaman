@@ -30,6 +30,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {getManufacturers} from "@/actions/manufacturers";
 import {DatePicker} from "@/app/(panel)/_components/date-picker";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
 
 export const FilamentOverview = () => {
     const [filaments, setFilaments] = useState<Filament[]>([]);
@@ -602,9 +603,7 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons}: {
             </CardContent>
             {showButtons && (
                 <CardFooter className="gap-4">
-                    <Link href="#">
-                        <Button variant="secondary">Details</Button>
-                    </Link>
+                    <FilamentDetailsDialog filament={filament} manufacturers={manufacturers ?? []}/>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger>
                             <Button>Nutzung angeben</Button>

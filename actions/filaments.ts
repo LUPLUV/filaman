@@ -16,6 +16,34 @@ export async function createFilament(filament: typeof filamentsTable.$inferInser
     }
 }
 
+export async function deleteFilament(filamentId: number) {
+    try {
+        await db
+            .delete(filamentsTable)
+            .where(eq(filamentsTable.id, filamentId))
+
+        return { success: true }
+    } catch {
+        return { success: false, error: 'Failed to delete filament' }
+    }
+}
+
+export async function updateFilament(
+    filamentId: number,
+    filament: typeof filamentsTable.$inferInsert
+) {
+    try {
+        await db
+            .update(filamentsTable)
+            .set(filament)
+            .where(eq(filamentsTable.id, filamentId))
+
+        return { success: true }
+    } catch {
+        return { success: false, error: 'Failed to update filament' }
+    }
+}
+
 export async function updateUsedFilament(
     filamentId: number,
     currentWeight: number,
@@ -45,6 +73,7 @@ export async function setRestFilament(
 ) {
     try {
         console.log("Setting rest weight for filament with RFID:", rfid, "to", restWeight);
+        // Check if filament exists
         const spool = await getFilamentByRfid(rfid);
         if(spool.length > 0) {
             console.log("Found spool with RFID:", rfid, " SPool:", spool);
