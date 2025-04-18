@@ -184,7 +184,7 @@ return (
                                     <FormControl>
                                         <Select
                                             onValueChange={field.onChange}
-                                            value={field.value.toString()}
+                                            value={field.value?.toString() ?? undefined}
                                             disabled={processing}
                                         >
                                             <SelectTrigger>
