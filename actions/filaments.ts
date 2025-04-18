@@ -44,6 +44,7 @@ export async function setRestFilament(
     restWeight: number
 ) {
     try {
+        console.log("Setting rest weight for filament with RFID:", rfid, "to", restWeight);
         const spool = await getFilamentByRfid(rfid);
         if(spool) {
             await db
