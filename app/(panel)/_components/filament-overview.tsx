@@ -38,6 +38,7 @@ export const FilamentOverview = () => {
     const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState("cards");
+    const [search, setSearch] = useState("");
 
     const loadFilaments = async () => {
         const data = await getFilaments();
@@ -59,22 +60,39 @@ export const FilamentOverview = () => {
         loadFilaments().then(() => setLoading(false));
     }, []);
 
+    const filteredFilaments = () => {
+        return filaments.filter((filament) => filament.name?.toLowerCase().includes(search.toLowerCase()))
+    }
+
     return loading ? (
         <div className="w-full mt-40 flex justify-center items-center">
             <LoaderCircle size={64} className="animate-spin"/>
         </div>
     ) : (
         <div className="space-y-4">
-            <div className="flex w-fit">
+            <div className="flex w-fit gap-4">
                 <div className="bg-secondary p-1 flex gap-1 rounded-md">
-                    <div onClick={() => setView("cards")} className={cn("p-2 rounded-md cursor-pointer", view === "cards" && "bg-background")}><Grid2X2 size={16}/></div>
-                    <div onClick={() => setView("cardsmd")} className={cn("p-2 rounded-md cursor-pointer", view === "cardsmd" && "bg-background")}><Grid3X3 size={16}/></div>
-                    <div onClick={() => setView("table")} className={cn("p-2 rounded-md cursor-pointer", view === "table" && "bg-background")}><Table2 size={16}/></div>
+                    <div onClick={() => setView("cards")}
+                         className={cn("p-2 rounded-md cursor-pointer", view === "cards" && "bg-background")}><Grid2X2
+                        size={16}/></div>
+                    <div onClick={() => setView("cardsmd")}
+                         className={cn("p-2 rounded-md cursor-pointer", view === "cardsmd" && "bg-background")}><Grid3X3
+                        size={16}/></div>
+                    <div onClick={() => setView("table")}
+                         className={cn("p-2 rounded-md cursor-pointer", view === "table" && "bg-background")}><Table2
+                        size={16}/></div>
                 </div>
+                <Input
+                    placeholder="Suche nach Filament"
+                    className="w-96"
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                    }}
+                />
             </div>
             {view === "cards" && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filaments.map((filament, index) => (
+                    {filteredFilaments().map((filament, index) => (
                         <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
                                       showButtons size="lg"/>
                     ))}
@@ -83,13 +101,14 @@ export const FilamentOverview = () => {
             )}
             {view === "cardsmd" && (
                 <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {filaments.map((filament, index) => (
-                        <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate} size="md"/>
+                    {filteredFilaments().map((filament, index) => (
+                        <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
+                                      size="md"/>
                     ))}
                 </div>
             )}
             {view === "table" && (
-                <FilamentTable columns={filamentTableColumns(manufacturers)} data={filaments}/>
+                <FilamentTable columns={filamentTableColumns(manufacturers)} data={filteredFilaments()}/>
             )}
         </div>
     )
@@ -645,7 +664,8 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons, si
             </CardContent>
             {showButtons && (
                 <CardFooter className="gap-4">
-                    <Button variant="destructive" size="icon" onClick={deleteFilamentLogic} disabled={processing}><Trash/></Button>
+                    <Button variant="destructive" size="icon" onClick={deleteFilamentLogic}
+                            disabled={processing}><Trash/></Button>
                     <FilamentDetailsDialog filament={filament} manufacturers={manufacturers ?? []}
                                            onUpdate={() => onUpdate?.()}/>
                     <Dialog open={open} onOpenChange={setOpen}>

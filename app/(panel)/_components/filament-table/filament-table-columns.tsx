@@ -3,7 +3,7 @@
 import {ColumnDef} from "@tanstack/table-core";
 import {Filament, Manufacturer} from "@/db/schema";
 import {Progress} from "@/components/ui/progress";
-import {cn} from "@/lib/utils";
+import {cn, formatDiameter} from "@/lib/utils";
 
 export const filamentTableColumns = (manufacturers: Manufacturer[]): ColumnDef<Filament>[] => {
     return [
@@ -39,25 +39,39 @@ export const filamentTableColumns = (manufacturers: Manufacturer[]): ColumnDef<F
         },
         {
             accessorKey: "diameter",
-            header: "Durchmesser (mm)",
+            header: "Durchmesser",
+            cell: ({row}) => {
+                const diameter = parseInt(row.getValue("diameter"));
+                return <span>{formatDiameter(diameter)} mm</span>
+            }
         },
         {
             accessorKey: "weight",
-            header: "Vollgewicht (g)",
+            header: "Vollgewicht",
+            cell: ({row}) => {
+                const weight = parseInt(row.getValue("weight"));
+                return <span>{weight} g</span>
+            }
         },
         {
             accessorKey: "restWeight",
-            header: "Restgewicht (g)",
+            header: "Restgewicht",
+            cell: ({row}) => {
+                const restWeight = parseInt(row.getValue("restWeight"));
+                return <span>{restWeight} g</span>
+            }
         },
         {
             accessorKey: "status",
             header: "Status",
         },
         {
-            header: "Verbraucht",
+            header: "Verbrauch",
             cell: ({row}) => {
+                const restWeight = parseInt(row.getValue("restWeight"));
+                const weight = parseInt(row.getValue("weight"));
                 return <Progress
-                    value={row.getValue("restWeight") ?? 1 / (parseFloat(row.getValue("weight")) ?? 10) * 100}/>
+                    value={restWeight / weight * 100}/>
             }
         }
     ];

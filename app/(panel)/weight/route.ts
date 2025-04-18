@@ -11,6 +11,10 @@ export async function GET(req: NextRequest) {
         return Response.json({error: 'Missing uid parameter'}, {status: 400});
     }
 
+    if (uid === "00000000000000") {
+        return Response.json({error: 'Invalid uid parameter'}, {status: 400});
+    }
+
     if (!weight || isNaN(parseFloat(weight))) {
         return Response.json({error: 'Weight must be a valid number'}, {status: 400});
     }
