@@ -79,7 +79,7 @@ export async function setRestFilament(
             .values(newSpool);
         return { success: true }
     } catch {
-        return { success: false, error: 'Failed to update filament' }
+        throw new Error('Failed to set rest weight for filament')
     }
 }
 
