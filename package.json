@@ -11,6 +11,7 @@
     "db:push": "bunx drizzle-kit push"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.16.0",
     "@hookform/resolvers": "^3.10.0",
     "@logto/next": "^4.1.0",
     "@radix-ui/react-dialog": "^1.1.4",

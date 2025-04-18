@@ -3,6 +3,7 @@ import Link from "next/link";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import {Menu} from "lucide-react";
+import {SignedIn, SignedOut, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
 
 export const Navigation = () => {
     return (
@@ -15,8 +16,11 @@ export const Navigation = () => {
             <ul className="hidden sm:flex gap-8">
                 <NavigationItem href="/">Filamente</NavigationItem>
             </ul>
-            <div className="hidden sm:block">
+            <div className="hidden sm:flex gap-4 items-center">
                 <ThemeToggle/>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
             </div>
             <div className="block sm:hidden">
                 <DropdownMenu>
