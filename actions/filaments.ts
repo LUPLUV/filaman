@@ -47,6 +47,7 @@ export async function setRestFilament(
         console.log("Setting rest weight for filament with RFID:", rfid, "to", restWeight);
         const spool = await getFilamentByRfid(rfid);
         if(spool) {
+            console.log("Found spool with RFID:", rfid, " SPool:", spool);
             await db
                 .update(filamentsTable)
                 .set({
@@ -58,6 +59,7 @@ export async function setRestFilament(
 
         const missingRfid = await getFilamentWithMissingRfid();
         if(missingRfid.length > 0) {
+            console.log("Found spool with missing RFID:", missingRfid[0]);
             await db
                 .update(filamentsTable)
                 .set({
@@ -73,6 +75,8 @@ export async function setRestFilament(
             restWeight: restWeight,
             createdAt: new Date(),
         }
+
+        console.log("Creating new spool with RFID:", rfid, " SPool:", newSpool);
 
         await db
             .insert(filamentsTable)
