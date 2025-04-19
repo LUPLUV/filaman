@@ -60,7 +60,7 @@ export const FilamentOverview = () => {
         </div>
     ) : (
         <div className="space-y-4">
-            <div className="flex w-fit gap-4">
+            <div className="flex gap-4">
                 <div className="bg-secondary p-1 flex gap-1 rounded-md">
                     <div onClick={() => setView("cards")}
                          className={cn("p-2 rounded-md cursor-pointer", view === "cards" && "bg-background")}><Grid2X2
@@ -74,7 +74,7 @@ export const FilamentOverview = () => {
                 </div>
                 <Input
                     placeholder="Suche nach Filament"
-                    className="w-96"
+                    className="max-w-96 w-full"
                     onChange={(e) => {
                         setSearch(e.target.value);
                     }}

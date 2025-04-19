@@ -32,7 +32,6 @@ import {updateFilament} from "@/actions/filaments";
 // Create an EditFilamentSchema that includes all filament fields
 const EditFilamentSchema = z.object({
     type: z.string(),
-    manufacturerId: z.coerce.number(),
     manufacturer: z.string().optional(),
     name: z.string().min(1, "Name ist erforderlich"),
     color: z.string().optional(),
