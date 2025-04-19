@@ -11,7 +11,7 @@ export const FilamentStatus = ['CLOSED', 'OPENED', 'EMPTY']
 
 export const CreateFilamentSchema = z.object({
     type: z.string(),
-    manufacturerId: z.coerce.number(),
+    manufacturer: z.string(),
     name: z.string(),
     color: z.string(),
     colorHex: z.string().optional(),

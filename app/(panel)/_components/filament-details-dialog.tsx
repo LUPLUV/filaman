@@ -384,40 +384,12 @@ export const FilamentDetailsDialog = ({
 
                                 <FormField
                                     control={form.control}
-                                    name="link"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Link zum Produkt</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} disabled={processing}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="code"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>QR Code</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} disabled={processing}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
                                     name="rfid1"
                                     render={({field}) => (
                                         <FormItem>
                                             <FormLabel>RFID 1</FormLabel>
                                             <FormControl>
-                                                <Input {...field} disabled={processing}/>
+                                                <Input {...field} disabled/>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -431,7 +403,7 @@ export const FilamentDetailsDialog = ({
                                         <FormItem>
                                             <FormLabel>RFID 2</FormLabel>
                                             <FormControl>
-                                                <Input {...field} disabled={processing}/>
+                                                <Input {...field} disabled/>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>

@@ -1,6 +1,6 @@
 "use client";
 
-import {Filament, filamentsTable} from "@/db/schema";
+import {Filament, filamentsTable, manufacturers} from "@/db/schema";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Progress} from "@/components/ui/progress";
@@ -34,7 +34,6 @@ import {filamentTableColumns} from "@/app/(panel)/_components/filament-table/fil
 
 export const FilamentOverview = () => {
     const [filaments, setFilaments] = useState<Filament[]>([]);
-    const [manufacturers] = useState<Manufacturer[]>([]);
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState("cards");
     const [search, setSearch] = useState("");
@@ -87,7 +86,7 @@ export const FilamentOverview = () => {
                         <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
                                       showButtons size="lg"/>
                     ))}
-                    <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
+                    <AddFilamentCard onUpdate={onUpdate}/>
                 </div>
             )}
             {view === "cardsmd" && (
@@ -105,7 +104,7 @@ export const FilamentOverview = () => {
     )
 }
 
-const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacturer[]; onUpdate?: () => void }) => {
+const AddFilamentCard = ({onUpdate}: { onUpdate?: () => void }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [hasPermission, setHasPermission] = useState(false);
     const [error, setError] = useState<string>();
@@ -119,7 +118,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
         resolver: zodResolver(CreateFilamentSchema),
         defaultValues: {
             type: "PLA",
-            manufacturerId: 1,
+            manufacturer: manufacturers[0],
             name: "",
             color: "",
             diameter: 175,
@@ -163,6 +162,7 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
             const result = await createFilament({
                 type: values.type,
+                manufacturer: values.manufacturer,
                 name: values.name,
                 color: values.color,
                 colorHex: values.colorHex,
@@ -265,14 +265,14 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                     />
                                     <FormField
                                         control={form.control}
-                                        name="manufacturerId"
+                                        name="manufacturer"
                                         render={({field}) => (
                                             <FormItem>
                                                 <FormLabel>Hersteller</FormLabel>
                                                 <FormControl>
                                                     <Select
                                                         onValueChange={field.onChange}
-                                                        value={field.value.toString()}
+                                                        value={field.value}
                                                         disabled={processing}
                                                     >
                                                         <SelectTrigger>
@@ -280,8 +280,8 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {manufacturers.map((manufacturer) => (
-                                                                <SelectItem key={manufacturer.id}
-                                                                            value={manufacturer.id.toString()}>{manufacturer.name}</SelectItem>
+                                                                <SelectItem key={manufacturer}
+                                                                            value={manufacturer}>{manufacturer}</SelectItem>
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
