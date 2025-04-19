@@ -1,12 +1,12 @@
 "use client";
 
 import {ColumnDef} from "@tanstack/table-core";
-import {Filament, Manufacturer} from "@/db/schema";
+import {Filament} from "@/db/schema";
 import {Progress} from "@/components/ui/progress";
 import {cn, formatDiameter} from "@/lib/utils";
+import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
 
-export const filamentTableColumns = (manufacturers: Manufacturer[]): ColumnDef<Filament>[] => {
-    return [
+export const filamentTableColumns: ColumnDef<Filament>[] = [
         {
             accessorKey: "name",
             header: "Name",
@@ -22,12 +22,8 @@ export const filamentTableColumns = (manufacturers: Manufacturer[]): ColumnDef<F
             header: "Material",
         },
         {
-            accessorKey: "manufacturerId",
+            accessorKey: "manufacturer",
             header: "Hersteller",
-            cell: ({row}) => {
-                const manufacturer = manufacturers.find(({id}) => id === parseInt(row.getValue("manufacturerId")));
-                return <span>{manufacturer?.name ?? "Nicht gefunden"}</span>
-            }
         },
         {
             accessorKey: "color",
@@ -73,6 +69,13 @@ export const filamentTableColumns = (manufacturers: Manufacturer[]): ColumnDef<F
                 return <Progress
                     value={restWeight / weight * 100}/>
             }
+        },
+        {
+            id: "actions",
+            header: "Aktionen",
+            cell: ({row}) => {
+                const filament: Filament = row.original;
+                return <FilamentDetailsDialog filament={filament}/>
+            }
         }
-    ];
-}
+    ]

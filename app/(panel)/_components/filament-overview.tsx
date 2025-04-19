@@ -1,6 +1,6 @@
 "use client";
 
-import {Filament, filamentsTable, Manufacturer, manufacturersTable} from "@/db/schema";
+import {Filament, filamentsTable} from "@/db/schema";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Progress} from "@/components/ui/progress";
@@ -26,7 +26,6 @@ import {cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
 import {Scanner} from "@yudiel/react-qr-scanner";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {getManufacturers} from "@/actions/manufacturers";
 import {DatePicker} from "@/app/(panel)/_components/date-picker";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
@@ -35,7 +34,7 @@ import {filamentTableColumns} from "@/app/(panel)/_components/filament-table/fil
 
 export const FilamentOverview = () => {
     const [filaments, setFilaments] = useState<Filament[]>([]);
-    const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
+    const [manufacturers] = useState<Manufacturer[]>([]);
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState("cards");
     const [search, setSearch] = useState("");
@@ -44,19 +43,11 @@ export const FilamentOverview = () => {
         const data = await getFilaments();
         setFilaments(data);
     };
-
-    const loadManufacturers = async () => {
-        const data = await getManufacturers();
-        setManufacturers(data);
-    }
-
     const onUpdate = () => {
         loadFilaments();
-        loadManufacturers();
     }
 
     useEffect(() => {
-        loadManufacturers();
         loadFilaments().then(() => setLoading(false));
     }, []);
 
@@ -93,7 +84,7 @@ export const FilamentOverview = () => {
             {view === "cards" && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredFilaments().map((filament, index) => (
-                        <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
+                        <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
                                       showButtons size="lg"/>
                     ))}
                     <AddFilamentCard manufacturers={manufacturers} onUpdate={onUpdate}/>
@@ -102,13 +93,13 @@ export const FilamentOverview = () => {
             {view === "cardsmd" && (
                 <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {filteredFilaments().map((filament, index) => (
-                        <FilamentCard key={index} filament={filament} manufacturers={manufacturers} onUpdate={onUpdate}
+                        <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
                                       size="md"/>
                     ))}
                 </div>
             )}
             {view === "table" && (
-                <FilamentTable columns={filamentTableColumns(manufacturers)} data={filteredFilaments()}/>
+                <FilamentTable columns={filamentTableColumns} data={filteredFilaments()}/>
             )}
         </div>
     )
@@ -172,7 +163,6 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
 
             const result = await createFilament({
                 type: values.type,
-                manufacturerId: values.manufacturerId,
                 name: values.name,
                 color: values.color,
                 colorHex: values.colorHex,
@@ -576,9 +566,8 @@ const AddFilamentCard = ({manufacturers, onUpdate}: { manufacturers: Manufacture
     )
 }
 
-export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons, size}: {
+export const FilamentCard = ({filament, onUpdate, showButtons, size}: {
     filament: typeof filamentsTable.$inferSelect;
-    manufacturers?: typeof manufacturersTable.$inferSelect[];
     onUpdate?: () => void;
     showButtons?: boolean;
     size?: "sm" | "md" | "lg";
@@ -653,7 +642,7 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons, si
                        className={cn("absolute top-14 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
             <CardHeader>
                 <CardTitle>{filament.name}{size === "lg" && <span> - #{filament.id}</span>}</CardTitle>
-                <CardDescription>{filament.type} - {manufacturers && manufacturers.find((man) => man.id == filament.manufacturerId)?.name}</CardDescription>
+                <CardDescription>{filament.type} - {filament.manufacturer}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
                 <p>Farbe: <Badge>{filament.color}</Badge></p>
@@ -666,7 +655,7 @@ export const FilamentCard = ({filament, manufacturers, onUpdate, showButtons, si
                 <CardFooter className="gap-4">
                     <Button variant="destructive" size="icon" onClick={deleteFilamentLogic}
                             disabled={processing}><Trash/></Button>
-                    <FilamentDetailsDialog filament={filament} manufacturers={manufacturers ?? []}
+                    <FilamentDetailsDialog filament={filament}
                                            onUpdate={() => onUpdate?.()}/>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger>
