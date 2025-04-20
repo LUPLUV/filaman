@@ -51,7 +51,7 @@ export const FilamentOverview = () => {
     }, []);
 
     const filteredFilaments = () => {
-        return filaments.filter((filament) => filament.name?.toLowerCase().includes(search.toLowerCase()))
+        return filaments.filter((filament) => filament.name?.toLowerCase().includes(search.toLowerCase()) ?? true)
     }
 
     return loading ? (
