@@ -74,7 +74,7 @@ export const FilamentDetailsDialog = ({
                 spoolType: filament.spoolType || 1,
                 name: filament.name || "",
                 color: filament.color || "",
-                colorHex: filament.colorHex || "",
+                colorHex: filament.colorHex?.length ?? 0 > 0 ? filament.colorHex ?? "#ffffff" : "#ffffff",
                 colorPantone: filament.colorPantone || "",
                 diameter: filament.diameter || 750,
                 weight: filament.weight || 1200,

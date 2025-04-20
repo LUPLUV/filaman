@@ -55,14 +55,6 @@ const ColorPicker = forwardRef<
                 </PopoverTrigger>
                 <PopoverContent className='w-full'>
                     <HexColorPicker color={parsedValue} onChange={onChange} />
-                    <Input
-                        maxLength={7}
-                        onChange={(e) => {
-                            onChange(e?.currentTarget?.value);
-                        }}
-                        ref={ref}
-                        value={parsedValue}
-                    />
                 </PopoverContent>
             </Popover>
         );
