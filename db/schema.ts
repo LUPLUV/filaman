@@ -8,6 +8,7 @@ export const manufacturers = [
 ]
 
 export type SpoolType = {
+    manufacturer: string;
     name: string;
     spoolWeight: number;
     filamentWeight: number;
@@ -16,27 +17,31 @@ export type SpoolType = {
 
 export const SpoolTypes: SpoolType[] = [
     {
+        manufacturer: "Prusament",
         name: "Prusament 1 kg",
         spoolWeight: 200,
         filamentWeight: 1000,
         length: 1000
     },
     {
+        manufacturer: "Prusament",
         name: "Prusament 2 kg",
         spoolWeight: 230,
-        filamentWeight: 1000,
+        filamentWeight: 2000,
         length: 2000
     },
     {
+        manufacturer: "DasFilament",
         name: "DasFilament 800 g",
         spoolWeight: 215,
         filamentWeight: 800,
         length: 1000
     },
     {
+        manufacturer: "DasFilament",
         name: "DasFilament 2 kg",
-        spoolWeight: 1000,
-        filamentWeight: 1000,
+        spoolWeight: 245,
+        filamentWeight: 2000,
         length: 2000
     }
 ]

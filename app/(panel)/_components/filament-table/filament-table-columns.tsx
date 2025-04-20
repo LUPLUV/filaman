@@ -1,9 +1,9 @@
 "use client";
 
 import {ColumnDef} from "@tanstack/table-core";
-import {Filament} from "@/db/schema";
+import {Filament, SpoolTypes} from "@/db/schema";
 import {Progress} from "@/components/ui/progress";
-import {cn, formatDiameter} from "@/lib/utils";
+import {buildName, calculateRemainingFilament, cn, formatDiameter, rawFilamentWeight} from "@/lib/utils";
 import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
 import {Button} from "@/components/ui/button";
 
@@ -15,7 +15,7 @@ export const filamentTableColumns: ColumnDef<Filament>[] = [
                 const hex: string = row.getValue("colorHex") ?? "";
                 return <span
                     className={cn("font-bold", hex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full p-1", hex === "#000000" && "dark:bg-white/60 bg-none rounded-full p-1")}
-                    style={{color: hex}}>{row.getValue("name")}</span>
+                    style={{color: hex}}>{buildName(row.original)}</span>
             }
         },
         {
@@ -23,8 +23,11 @@ export const filamentTableColumns: ColumnDef<Filament>[] = [
             header: "Material",
         },
         {
-            accessorKey: "manufacturer",
+            accessorKey: "spoolType",
             header: "Hersteller",
+            cell: ({row}) => {
+                return SpoolTypes[parseInt(row.getValue("spoolType"))].manufacturer
+            }
         },
         {
             accessorKey: "color",
@@ -35,48 +38,24 @@ export const filamentTableColumns: ColumnDef<Filament>[] = [
             header: "Farbe (hex)",
         },
         {
-            accessorKey: "diameter",
-            header: "Durchmesser",
-            cell: ({row}) => {
-                const diameter = parseInt(row.getValue("diameter"));
-                return <span>{formatDiameter(diameter)} mm</span>
-            }
-        },
-        {
-            accessorKey: "weight",
-            header: "Vollgewicht",
-            cell: ({row}) => {
-                const weight = parseInt(row.getValue("weight"));
-                return <span>{weight} g</span>
-            }
-        },
-        {
             accessorKey: "restWeight",
             header: "Restgewicht",
             cell: ({row}) => {
-                const restWeight = parseInt(row.getValue("restWeight"));
-                return <span>{restWeight} g</span>
+                return <span>{rawFilamentWeight(row.original)} g</span>
             }
-        },
-        {
-            accessorKey: "status",
-            header: "Status",
         },
         {
             header: "Verbrauch",
             cell: ({row}) => {
-                const restWeight = parseInt(row.getValue("restWeight"));
-                const weight = parseInt(row.getValue("weight"));
                 return <Progress
-                    value={restWeight / weight * 100}/>
+                    value={calculateRemainingFilament(row.original)}/>
             }
         },
         {
             id: "actions",
             header: "Aktionen",
             cell: ({row}) => {
-                const filament: Filament = row.original;
-                return <FilamentDetailsDialog filament={filament}><Button>Details</Button></FilamentDetailsDialog>
+                return <FilamentDetailsDialog filament={row.original}><Button size="sm">Details</Button></FilamentDetailsDialog>
             }
         }
     ]
