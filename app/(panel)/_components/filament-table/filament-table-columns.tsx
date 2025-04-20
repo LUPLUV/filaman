@@ -5,6 +5,7 @@ import {Filament} from "@/db/schema";
 import {Progress} from "@/components/ui/progress";
 import {cn, formatDiameter} from "@/lib/utils";
 import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
+import {Button} from "@/components/ui/button";
 
 export const filamentTableColumns: ColumnDef<Filament>[] = [
         {
@@ -75,7 +76,7 @@ export const filamentTableColumns: ColumnDef<Filament>[] = [
             header: "Aktionen",
             cell: ({row}) => {
                 const filament: Filament = row.original;
-                return <FilamentDetailsDialog filament={filament}/>
+                return <FilamentDetailsDialog filament={filament}><Button>Details</Button></FilamentDetailsDialog>
             }
         }
     ]

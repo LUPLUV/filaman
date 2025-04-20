@@ -1,6 +1,6 @@
 "use client";
 
-import {Filament, filamentsTable, manufacturers} from "@/db/schema";
+import {Filament, filamentsTable, manufacturers, SpoolTypes} from "@/db/schema";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Progress} from "@/components/ui/progress";
@@ -15,14 +15,14 @@ import {
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {CreateFilamentSchema, FilamentStatus, FilamentTypes, UsageSchema} from "@/lib/formSchema";
+import {CreateFilamentSchema, FilamentStatus, FilamentTypes} from "@/lib/formSchema";
 import {useEffect, useState} from "react";
 import {useToast} from "@/hooks/use-toast";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {createFilament, deleteFilament, getFilaments, updateUsedFilament} from "@/actions/filaments";
-import {CheckCircle, CircleDot, Grid2X2, Grid3X3, LoaderCircle, Table2, Trash} from "lucide-react";
-import {cn} from "@/lib/utils";
+import {createFilament, getFilaments} from "@/actions/filaments";
+import {CheckCircle, CircleDot, Grid2X2, Grid3X3, LoaderCircle, Table2} from "lucide-react";
+import {buildName, calculateRemainingFilament, cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
 import {Scanner} from "@yudiel/react-qr-scanner";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -566,137 +566,34 @@ const AddFilamentCard = ({onUpdate}: { onUpdate?: () => void }) => {
     )
 }
 
-export const FilamentCard = ({filament, onUpdate, showButtons, size}: {
+export const FilamentCard = ({filament, onUpdate, size}: {
     filament: typeof filamentsTable.$inferSelect;
     onUpdate?: () => void;
     showButtons?: boolean;
     size?: "sm" | "md" | "lg";
 }) => {
-    const [open, setOpen] = useState(false);
-    const [processing, setProcessing] = useState(false);
-    const {toast} = useToast();
-
-    const form = useForm<z.infer<typeof UsageSchema>>({
-        resolver: zodResolver(UsageSchema),
-        defaultValues: {
-            usedAt: new Date(),
-        }
-    })
-
-    const onSubmit = async (values: z.infer<typeof UsageSchema>) => {
-        try {
-            setProcessing(true)
-
-            console.log(values)
-
-            const result = await updateUsedFilament(
-                filament.id,
-                filament.restWeight,
-                values.usedWeight
-            )
-
-            if (!result.success) {
-                console.log(result.error)
-                throw new Error(result.error)
-            }
-
-            setOpen(false)
-            form.reset()
-            toast({
-                title: "Filament aktualisiert",
-                description: `Du hast ${values.usedWeight}g von ${filament.name} genutzt`,
-            })
-            onUpdate?.()
-        } catch {
-            toast({
-                title: "Error",
-                description: "Filament konnte nicht aktualisiert werden",
-                variant: "destructive"
-            })
-        } finally {
-            setProcessing(false)
-        }
-    }
-
-    const deleteFilamentLogic = async () => {
-        deleteFilament(filament.id)
-            .then(() => {
-                toast({
-                    title: "Filament gelöscht",
-                    description: `Du hast ${filament.name} gelöscht`,
-                })
-                onUpdate?.()
-            })
-            .catch(() => {
-                toast({
-                    title: "Error",
-                    description: "Filament konnte nicht gelöscht werden",
-                    variant: "destructive"
-                })
-            });
-    }
 
     return (
-        <Card className={cn("relative overflow-hidden", size === "lg" && "min-w-96")}>
-            <CircleDot size={size === "lg" ? 128 : 100} color={filament.colorHex ? filament.colorHex : "#ffffff"}
-                       className={cn("absolute top-14 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
-            <CardHeader>
-                <CardTitle>{filament.name}{size === "lg" && <span> - #{filament.id}</span>}</CardTitle>
-                <CardDescription>{filament.type} - {filament.manufacturer}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-                <p>Farbe: <Badge>{filament.color}</Badge></p>
-                {size === "lg" && <p>Gewicht (volle Spule): <Badge>{filament.weight}g</Badge></p>}
-                <p>Restgewicht: <Badge>{filament.restWeight}g</Badge></p>
-                {size === "lg" && <p>Status: <Badge>{filament.status}</Badge></p>}
-                <p>Nutzung: <Progress value={filament.restWeight / (filament.weight ?? 100) * 100}/></p>
-            </CardContent>
-            {showButtons && (
-                <CardFooter className="gap-4">
-                    <Button variant="destructive" size="icon" onClick={deleteFilamentLogic}
-                            disabled={processing}><Trash/></Button>
-                    <FilamentDetailsDialog filament={filament}
-                                           onUpdate={() => onUpdate?.()}/>
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogTrigger>
-                            <Button>Nutzung angeben</Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Gib genutztes Filament an</DialogTitle>
-                                <DialogDescription>{filament.name}</DialogDescription>
-                            </DialogHeader>
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)}>
-                                    <FormField
-                                        control={form.control}
-                                        name="usedWeight"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Genutztes Gewicht</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        type="number"
-                                                        placeholder="42"
-                                                        disabled={processing}
-                                                    />
-                                                </FormControl>
-                                                <FormDescription/>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
-                                </form>
-                            </Form>
-                            <DialogFooter>
-                                <Button onClick={form.handleSubmit(onSubmit)}
-                                        disabled={processing}>Bestätigen</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </CardFooter>
-            )}
-        </Card>
+        <FilamentDetailsDialog filament={filament}
+                               onUpdate={() => onUpdate?.()}>
+            <Card className={cn("relative overflow-hidden cursor-pointer", size === "lg" && "min-w-96")}>
+                <CircleDot size={size === "lg" ? 128 : 100} color={filament.colorHex ? filament.colorHex : "#ffffff"}
+                           className={cn("absolute top-12 -right-10", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
+                <CardHeader>
+                    <CardTitle>{buildName(filament)}</CardTitle>
+                    <CardDescription>{filament.type} - {filament.manufacturer}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                    <p>Farbe: <Badge>{filament.color}</Badge></p>
+                    <p>Restgewicht: <Badge>{filament.restWeight - SpoolTypes[filament.spoolType ?? 0].spoolWeight}g</Badge>
+                    </p>
+                    <div className="relative flex">
+                        <span
+                            className="absolute text-xs font-semibold text-secondary z-40 left-2">{calculateRemainingFilament(filament).toFixed(0)}%</span>
+                        <Progress value={calculateRemainingFilament(filament)}/>
+                    </div>
+                </CardContent>
+            </Card>
+        </FilamentDetailsDialog>
     )
 }

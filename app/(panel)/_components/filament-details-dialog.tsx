@@ -1,12 +1,12 @@
 "use client";
 
 import {useState} from "react";
-import {Filament, filamentsTable, manufacturers} from "@/db/schema";
+import {Filament, filamentsTable, SpoolTypes} from "@/db/schema";
 import {Button} from "@/components/ui/button";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {FilamentStatus, FilamentTypes} from "@/lib/formSchema";
+import {FilamentTypes} from "@/lib/formSchema";
 import {useToast} from "@/hooks/use-toast";
 import {
     Dialog,
@@ -26,14 +26,17 @@ import {
 } from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {DatePicker} from "@/app/(panel)/_components/date-picker";
-import {updateFilament} from "@/actions/filaments";
+import {deleteFilament, updateFilament} from "@/actions/filaments";
+import {SelectSearch} from "@/components/ui/select-search";
+import {ColorPicker} from "@/components/color-picker";
+import {Save, Trash2} from "lucide-react";
 
 // Create an EditFilamentSchema that includes all filament fields
 const EditFilamentSchema = z.object({
     type: z.string(),
     manufacturer: z.string().optional(),
-    name: z.string().min(1, "Name ist erforderlich"),
+    spoolType: z.coerce.number().optional(),
+    name: z.string().optional(),
     color: z.string().optional(),
     colorHex: z.string().optional(),
     colorPantone: z.string().optional(),
@@ -51,11 +54,13 @@ const EditFilamentSchema = z.object({
 });
 
 export const FilamentDetailsDialog = ({
-                                                filament,
-                                                onUpdate
-                                            }: {
+                                          filament,
+                                          onUpdate,
+                                          children
+                                      }: {
         filament: Filament;
         onUpdate?: () => void;
+        children: React.ReactNode
     }) => {
         const [open, setOpen] = useState(false);
         const [processing, setProcessing] = useState(false);
@@ -66,6 +71,7 @@ export const FilamentDetailsDialog = ({
             defaultValues: {
                 type: filament.type!,
                 manufacturer: filament.manufacturer || "",
+                spoolType: filament.spoolType || 1,
                 name: filament.name || "",
                 color: filament.color || "",
                 colorHex: filament.colorHex || "",
@@ -91,6 +97,7 @@ export const FilamentDetailsDialog = ({
             const filamentData: typeof filamentsTable.$inferInsert = {
                 manufacturer: values.manufacturer,
                 type: values.type,
+                spoolType: values.spoolType,
                 name: values.name,
                 color: values.color,
                 colorHex: values.colorHex,
@@ -131,12 +138,32 @@ export const FilamentDetailsDialog = ({
                 });
         }
 
-        return (
-            <>
-                <Button variant="secondary" onClick={() => setOpen(true)}>
-                    Details
-                </Button>
 
+        const deleteFilamentLogic = async () => {
+            setProcessing(true);
+            deleteFilament(filament.id)
+                .then(() => {
+                    toast({
+                        title: "Filament gelöscht",
+                        description: `Du hast ${filament.name} gelöscht`,
+                    })
+                    setOpen(false)
+                    onUpdate?.()
+                })
+                .catch(() => {
+                    toast({
+                        title: "Error",
+                        description: "Filament konnte nicht gelöscht werden",
+                        variant: "destructive"
+                    })
+                });
+        }
+
+        return (
+            <div>
+                <div onClick={() => setOpen(true)}>
+                    {children}
+                </div>
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogContent className="max-w-4xl max-h-screen overflow-scroll">
                         <DialogHeader>
@@ -148,10 +175,38 @@ export const FilamentDetailsDialog = ({
                             <form className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                                 <FormField
                                     control={form.control}
+                                    name="spoolType"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Spulentyp</FormLabel>
+                                            <FormControl>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    value={field.value?.toString() ?? "1"}
+                                                    disabled={processing}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue/>
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {SpoolTypes.map((type, index) => (
+                                                            <SelectItem key={index}
+                                                                        value={index.toString()}>{type.name}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
                                     name="type"
                                     render={({field}) => (
                                         <FormItem>
-                                            <FormLabel>Filament Art</FormLabel>
+                                            <FormLabel>Material</FormLabel>
                                             <FormControl>
                                                 <Select
                                                     onValueChange={field.onChange}
@@ -175,44 +230,12 @@ export const FilamentDetailsDialog = ({
 
                                 <FormField
                                     control={form.control}
-                                    name="manufacturer"
+                                    name="restWeight"
                                     render={({field}) => (
                                         <FormItem>
-                                            <FormLabel>Hersteller</FormLabel>
+                                            <FormLabel>Restgewicht</FormLabel>
                                             <FormControl>
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    value={field.value}
-                                                    disabled={processing}
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue/>
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {manufacturers.map((manufacturer) => (
-                                                            <SelectItem
-                                                                key={manufacturer}
-                                                                value={manufacturer}
-                                                            >
-                                                                {manufacturer}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Name</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} disabled={processing}/>
+                                                <Input {...field} type="number" disabled={processing}/>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -226,7 +249,44 @@ export const FilamentDetailsDialog = ({
                                         <FormItem>
                                             <FormLabel>Farbe</FormLabel>
                                             <FormControl>
-                                                <Input {...field} disabled={processing}/>
+                                                <SelectSearch
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                    options={[
+                                                        "Transparent",
+                                                        "Schwarz",
+                                                        "Weiß",
+                                                        "Blau",
+                                                        "Grün",
+                                                        "Rot",
+                                                        "Orange",
+                                                        "Pink",
+                                                        "Gelb",
+                                                        "Grau",
+                                                        "Magenta",
+                                                        "Andere"
+                                                    ].map((color => ({
+                                                        value: color,
+                                                        label: color
+                                                    })))}
+                                                    placeholder="Farbe auswählen..."
+                                                    searchPlaceholder="Farbe suchen..."
+                                                />
+                                            </FormControl>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Name</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Pristine White"
+                                                       className="placeholder:italic" {...field} disabled={processing}/>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -240,142 +300,10 @@ export const FilamentDetailsDialog = ({
                                         <FormItem>
                                             <FormLabel>Hexcode</FormLabel>
                                             <FormControl>
-                                                <Input {...field} disabled={processing}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="colorPantone"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Pantone</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} disabled={processing}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="diameter"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Durchmesser</FormLabel>
-                                            <FormControl>
-                                                <Select defaultValue={"175"} onValueChange={field.onChange}
-                                                        value={field.value?.toString() ?? undefined} disabled={processing}>
-                                                    <SelectTrigger>
-                                                        <SelectValue/>
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value={"100"}>1.00 mm</SelectItem>
-                                                        <SelectItem value={"175"}>1.75 mm</SelectItem>
-                                                        <SelectItem value={"300"}>3.00 mm</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="weight"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Gewicht (volle Spule)</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} type="number" disabled={processing}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="restWeight"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Rest Gewicht</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} type="number" disabled={processing}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="status"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Status</FormLabel>
-                                            <FormControl>
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    value={field.value}
-                                                    disabled={processing}
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue/>
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {FilamentStatus.map((status) => (
-                                                            <SelectItem key={status} value={status}>{status}</SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="openedAt"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Geöffnet am</FormLabel>
-                                            <FormControl>
-                                                <DatePicker onValueChange={field.onChange} value={field.value}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="boughtAt"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Gekauft am</FormLabel>
-                                            <FormControl>
-                                                <DatePicker onValueChange={field.onChange} value={field.value}/>
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="emptyAt"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Leer am</FormLabel>
-                                            <FormControl>
-                                                <DatePicker onValueChange={field.onChange} value={field.value}/>
+                                                <div className="flex gap-2">
+                                                    <ColorPicker className="w-12" {...field} disabled={processing}/>
+                                                    <Input {...field} disabled={processing}/>
+                                                </div>
                                             </FormControl>
                                             <FormMessage/>
                                         </FormItem>
@@ -412,17 +340,26 @@ export const FilamentDetailsDialog = ({
                             </form>
                         </Form>
 
-                        <DialogFooter>
+                        <DialogFooter className="w-full flex justify-between">
+                            <Button
+                                variant="destructive"
+                                onClick={deleteFilamentLogic}
+                                disabled={processing}
+                                size="icon"
+                            >
+                                <Trash2/>
+                            </Button>
                             <Button
                                 onClick={form.handleSubmit(onSubmit)}
                                 disabled={processing}
+                                size="icon"
                             >
-                                Speichern
+                                <Save/>
                             </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-            </>
+            </div>
         );
     }
 ;
