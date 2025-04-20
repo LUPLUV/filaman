@@ -6,10 +6,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDiameter(diameter: number): string {
-  return diameter / 100 + ""
-}
-
 export function buildName(filament: Filament): string {
     return `${filament.type} ${filament.name ?? filament.color}`
 }

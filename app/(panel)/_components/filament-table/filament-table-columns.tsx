@@ -3,7 +3,7 @@
 import {ColumnDef} from "@tanstack/table-core";
 import {Filament, SpoolTypes} from "@/db/schema";
 import {Progress} from "@/components/ui/progress";
-import {buildName, calculateRemainingFilament, cn, formatDiameter, rawFilamentWeight} from "@/lib/utils";
+import {buildName, calculateRemainingFilament, cn, rawFilamentWeight} from "@/lib/utils";
 import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
 import {Button} from "@/components/ui/button";
 
