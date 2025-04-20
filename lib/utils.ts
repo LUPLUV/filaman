@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function buildName(filament: Filament): string {
-    return `${filament.type} ${filament.name ?? filament.color}`
+    return `${filament.type} ${filament.name?.length ?? 0 > 0 ? filament.name : filament.color}`
 }
 
 export function rawFilamentWeight(filament: Filament): number {
