@@ -2,10 +2,9 @@ import {integer, pgTable, timestamp, uuid, varchar} from "drizzle-orm/pg-core";
 
 export type Filament = typeof filamentsTable.$inferSelect;
 
-export const manufacturers = [
-    "Prusament",
-    "DasFilament"
-]
+export function spoolType(filament: Filament): SpoolType {
+    return SpoolTypes[filament.spoolType ?? 0];
+}
 
 export type SpoolType = {
     manufacturer: string;
