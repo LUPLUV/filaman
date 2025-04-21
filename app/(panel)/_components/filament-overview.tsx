@@ -56,6 +56,9 @@ export const FilamentOverview = () => {
         <div className="space-y-4">
             <div className="flex gap-4">
                 <div className="bg-secondary p-1 flex gap-1 rounded-md">
+                    <div onClick={() => setView("shelf")}
+                         className={cn("p-2 rounded-md cursor-pointer", view === "shelf" && "bg-background")}><Shapes
+                        size={16}/></div>
                     <div onClick={() => setView("cards")}
                          className={cn("p-2 rounded-md cursor-pointer", view === "cards" && "bg-background")}><Grid2X2
                         size={16}/></div>
@@ -64,9 +67,6 @@ export const FilamentOverview = () => {
                         size={16}/></div>
                     <div onClick={() => setView("table")}
                          className={cn("p-2 rounded-md cursor-pointer", view === "table" && "bg-background")}><Table2
-                        size={16}/></div>
-                    <div onClick={() => setView("shelf")}
-                         className={cn("p-2 rounded-md cursor-pointer", view === "shelf" && "bg-background")}><Shapes
                         size={16}/></div>
                 </div>
                 <Input
@@ -98,8 +98,8 @@ export const FilamentOverview = () => {
             )}
             {view === "shelf" && (
                 <div className="grid grid-cols-2 gap-4">
-                    <h2 className="text-2xl font-bold">PLA</h2>
-                    <h2 className="text-2xl font-bold">PETG</h2>
+                    <h2 className="text-4xl font-bold">PLA</h2>
+                    <h2 className="text-4xl font-bold">PETG</h2>
                     <div className="flex flex-wrap gap-4">
                         {filteredFilaments().filter((filament) => filament.type === "PLA").map((filament, index) => (
                             <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
@@ -128,7 +128,7 @@ export const FilamentCard = ({filament, onUpdate, size}: {
     return (
         <FilamentDetailsDialog filament={filament}
                                onUpdate={() => onUpdate?.()}>
-            <HoverCard openDelay={0} closeDelay={0}>
+            <HoverCard openDelay={200} closeDelay={0}>
                 <HoverCardTrigger>
                     <Card
                         className={cn("relative overflow-hidden cursor-pointer", size === "lg" && "min-w-96", size === "sm" && "w-fit h-fit")}>
