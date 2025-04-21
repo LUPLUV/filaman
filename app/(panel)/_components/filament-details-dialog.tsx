@@ -30,6 +30,7 @@ import {deleteFilament, updateFilament} from "@/actions/filaments";
 import {SelectSearch} from "@/components/ui/select-search";
 import {ColorPicker} from "@/components/color-picker";
 import {Save, Trash2} from "lucide-react";
+import {DeleteDialog} from "@/components/delete-dialog";
 
 // Create an EditFilamentSchema that includes all filament fields
 const EditFilamentSchema = z.object({
@@ -69,11 +70,11 @@ export const FilamentDetailsDialog = ({
         const form = useForm<z.infer<typeof EditFilamentSchema>>({
             resolver: zodResolver(EditFilamentSchema),
             defaultValues: {
-                type: filament.type!,
+                type: filament.type || undefined,
                 manufacturer: filament.manufacturer || "",
-                spoolType: filament.spoolType || 1,
-                name: filament.name || "",
-                color: filament.color || "",
+                spoolType: filament.spoolType || undefined,
+                name: filament.name || undefined,
+                color: filament.color || undefined,
                 colorHex: filament.colorHex?.length ?? 0 > 0 ? filament.colorHex ?? "#ffffff" : "#ffffff",
                 colorPantone: filament.colorPantone || "",
                 diameter: filament.diameter || 750,
@@ -182,11 +183,11 @@ export const FilamentDetailsDialog = ({
                                             <FormControl>
                                                 <Select
                                                     onValueChange={field.onChange}
-                                                    value={field.value?.toString() ?? "1"}
+                                                    value={field.value?.toString() ?? undefined}
                                                     disabled={processing}
                                                 >
                                                     <SelectTrigger>
-                                                        <SelectValue/>
+                                                        <SelectValue placeholder="Spulentyp auswählen..."/>
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {SpoolTypes.map((type, index) => (
@@ -214,7 +215,7 @@ export const FilamentDetailsDialog = ({
                                                     disabled={processing}
                                                 >
                                                     <SelectTrigger>
-                                                        <SelectValue/>
+                                                        <SelectValue placeholder="Material auswählen..."/>
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {FilamentTypes.map((type) => (
@@ -341,19 +342,20 @@ export const FilamentDetailsDialog = ({
                         </Form>
 
                         <DialogFooter className="w-full flex justify-between">
-                            <Button
-                                variant="destructive"
-                                onClick={deleteFilamentLogic}
-                                disabled={processing}
-                                size="icon"
-                            >
-                                <Trash2/>
-                            </Button>
+                            <DeleteDialog title="Spule löschen?" description="Bist du dir sicher dass du diese Spule löschen willst?" onDelete={deleteFilamentLogic}>
+                                <Button
+                                    variant="destructive"
+                                    disabled={processing}
+                                >
+                                    Löschen
+                                    <Trash2/>
+                                </Button>
+                            </DeleteDialog>
                             <Button
                                 onClick={form.handleSubmit(onSubmit)}
                                 disabled={processing}
-                                size="icon"
                             >
+                                Speichern
                                 <Save/>
                             </Button>
                         </DialogFooter>

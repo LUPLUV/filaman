@@ -32,7 +32,19 @@ export const FilamentOverview = () => {
     }, []);
 
     const filteredFilaments = () => {
-        return filaments.filter((filament) => filament.name?.toLowerCase().includes(search.toLowerCase()) ?? true)
+        // filter for name, type and color
+        return filaments.filter((filament) => {
+            const name = buildName(filament).toLowerCase();
+            const type = filament.type?.toLowerCase() ?? "";
+            const color = filament.color?.toLowerCase() ?? "";
+            const spoolType = SpoolTypes[filament.spoolType ?? 0].name.toLowerCase();
+            const rfid1 = filament.rfid1?.toLowerCase() ?? "";
+            const rfid2 = filament.rfid2?.toLowerCase() ?? "";
+            const hex = filament.colorHex?.toLowerCase() ?? "";
+            const searchTerm = search.toLowerCase();
+
+            return name.includes(searchTerm) || type.includes(searchTerm) || color.includes(searchTerm) || spoolType.includes(searchTerm) || rfid1.includes(searchTerm) || rfid2.includes(searchTerm) || hex.includes(searchTerm);
+        });
     }
 
     return loading ? (
