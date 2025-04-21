@@ -164,7 +164,7 @@ export const FilamentCard = ({filament, onUpdate, size}: {
                 {size === "sm" && (
                     <HoverCardContent className="w-80">
                         <div className="flex flex-col gap-2">
-                            <h2 className="text-lg font-bold">Details</h2>
+                            <h2 className="text-lg font-bold">{buildName(filament)}</h2>
                             <p>Spule: <Badge>{spoolType(filament).name}</Badge></p>
                             <p>Farbe: <Badge>{filament.color}</Badge></p>
                             <p>Restgewicht: <Badge>{filament.restWeight - SpoolTypes[filament.spoolType ?? 0].spoolWeight}g</Badge>
