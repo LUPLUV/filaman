@@ -33,9 +33,12 @@ export const Navigation = () => {
                         <DropdownMenuItem>
                             <NavigationItem href="/">Filamente</NavigationItem>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <NavigationItem href="/scan">Scannen</NavigationItem>
-                        </DropdownMenuItem>
+                        <div className="m-4 flex justify-between">
+                            <ThemeToggle/>
+                            <SignedIn>
+                                <UserButton />
+                            </SignedIn>
+                        </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
