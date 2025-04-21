@@ -1,4 +1,5 @@
 import {Navigation} from "@/app/(panel)/_components/navigation";
+import {Footer} from "@/app/(panel)/_components/footer";
 
 export default function PanelLayout ({children}: {
     children: React.ReactNode
@@ -9,6 +10,7 @@ export default function PanelLayout ({children}: {
             <div className="mt-4 min-h-screen">
             {children}
             </div>
+            <Footer/>
         </main>
     )
 }

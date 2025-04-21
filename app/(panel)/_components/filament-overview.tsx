@@ -6,12 +6,13 @@ import {Progress} from "@/components/ui/progress";
 import {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {getFilaments} from "@/actions/filaments";
-import {CircleDot, Grid2X2, Grid3X3, LoaderCircle, Table2} from "lucide-react";
+import {CircleDot, Grid2X2, Grid3X3, LoaderCircle, Shapes, Table2} from "lucide-react";
 import {buildName, calculateRemainingFilament, cn} from "@/lib/utils";
 import {Badge} from "@/components/ui/badge";
 import {FilamentDetailsDialog} from "@/app/(panel)/_components/filament-details-dialog";
 import {FilamentTable} from "@/app/(panel)/_components/filament-table/filament-table";
 import {filamentTableColumns} from "@/app/(panel)/_components/filament-table/filament-table-columns";
+import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
 export const FilamentOverview = () => {
     const [filaments, setFilaments] = useState<Filament[]>([]);
@@ -64,6 +65,9 @@ export const FilamentOverview = () => {
                     <div onClick={() => setView("table")}
                          className={cn("p-2 rounded-md cursor-pointer", view === "table" && "bg-background")}><Table2
                         size={16}/></div>
+                    <div onClick={() => setView("shelf")}
+                         className={cn("p-2 rounded-md cursor-pointer", view === "shelf" && "bg-background")}><Shapes
+                        size={16}/></div>
                 </div>
                 <Input
                     placeholder="Suche nach Filament"
@@ -92,6 +96,24 @@ export const FilamentOverview = () => {
             {view === "table" && (
                 <FilamentTable columns={filamentTableColumns} data={filteredFilaments()}/>
             )}
+            {view === "shelf" && (
+                <div className="grid grid-cols-2 gap-4">
+                    <h2 className="text-2xl font-bold">PLA</h2>
+                    <h2 className="text-2xl font-bold">PETG</h2>
+                    <div className="flex flex-wrap gap-4">
+                        {filteredFilaments().filter((filament) => filament.type === "PLA").map((filament, index) => (
+                            <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
+                                          size="sm"/>
+                        ))}
+                    </div>
+                    <div className="flex flex-wrap gap-4">
+                        {filteredFilaments().filter((filament) => filament.type === "PETG").map((filament, index) => (
+                            <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
+                                          size="sm"/>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
@@ -106,25 +128,56 @@ export const FilamentCard = ({filament, onUpdate, size}: {
     return (
         <FilamentDetailsDialog filament={filament}
                                onUpdate={() => onUpdate?.()}>
-            <Card className={cn("relative overflow-hidden cursor-pointer", size === "lg" && "min-w-96")}>
-                <CircleDot size={size === "lg" ? 128 : 100} color={filament.colorHex ? filament.colorHex : "#ffffff"}
-                           className={cn("absolute -right-10", size === "lg" ? "top-12" : "top-16", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
-                <CardHeader>
-                    <CardTitle>{buildName(filament)}</CardTitle>
-                    <CardDescription>{filament.type} - {filament.manufacturer}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4">
-                    <p>Spule: <Badge>{spoolType(filament).name}</Badge></p>
-                    <p>Farbe: <Badge>{filament.color}</Badge></p>
-                    <p>Restgewicht: <Badge>{filament.restWeight - SpoolTypes[filament.spoolType ?? 0].spoolWeight}g</Badge>
-                    </p>
-                    <div className="relative flex">
+            <HoverCard openDelay={0} closeDelay={0}>
+                <HoverCardTrigger>
+                    <Card
+                        className={cn("relative overflow-hidden cursor-pointer", size === "lg" && "min-w-96", size === "sm" && "w-fit h-fit")}>
+                        {size === "sm" ? (
+                            <CircleDot size={100}
+                                       color={filament.colorHex ? filament.colorHex : "#ffffff"}
+                                       className={cn(filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
+                        ) : (
+                            <>
+                                <CircleDot size={size === "lg" ? 128 : 100}
+                                           color={filament.colorHex ? filament.colorHex : "#ffffff"}
+                                           className={cn("absolute -right-10", size === "lg" ? "top-12" : "top-16", filament.colorHex === "#ffffff" && "bg-black/60 dark:bg-none rounded-full", filament.colorHex === "#000000" && "dark:bg-white/60 bg-none rounded-full")}/>
+
+                                <CardHeader>
+                                    <CardTitle>{buildName(filament)}</CardTitle>
+                                    <CardDescription>{filament.type} - {filament.manufacturer}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex flex-col gap-4">
+                                    <p>Spule: <Badge>{spoolType(filament).name}</Badge></p>
+                                    <p>Farbe: <Badge>{filament.color}</Badge></p>
+                                    <p>Restgewicht: <Badge>{filament.restWeight - SpoolTypes[filament.spoolType ?? 0].spoolWeight}g</Badge>
+                                    </p>
+                                    <div className="relative flex">
                         <span
                             className="absolute text-xs font-semibold text-white z-40 left-2 mix-blend-difference">{calculateRemainingFilament(filament).toFixed(0)}%</span>
-                        <Progress value={calculateRemainingFilament(filament)}/>
-                    </div>
-                </CardContent>
-            </Card>
+                                        <Progress value={calculateRemainingFilament(filament)}/>
+                                    </div>
+                                </CardContent>
+                            </>
+                        )}
+                    </Card>
+                </HoverCardTrigger>
+                {size === "sm" && (
+                    <HoverCardContent className="w-80">
+                        <div className="flex flex-col gap-2">
+                            <h2 className="text-lg font-bold">Details</h2>
+                            <p>Spule: <Badge>{spoolType(filament).name}</Badge></p>
+                            <p>Farbe: <Badge>{filament.color}</Badge></p>
+                            <p>Restgewicht: <Badge>{filament.restWeight - SpoolTypes[filament.spoolType ?? 0].spoolWeight}g</Badge>
+                            </p>
+                            <div className="relative flex">
+                        <span
+                            className="absolute text-xs font-semibold text-white z-40 left-2 mix-blend-difference">{calculateRemainingFilament(filament).toFixed(0)}%</span>
+                                <Progress value={calculateRemainingFilament(filament)}/>
+                            </div>
+                        </div>
+                    </HoverCardContent>
+                )}
+            </HoverCard>
         </FilamentDetailsDialog>
     )
 }
