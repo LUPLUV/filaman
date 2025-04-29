@@ -96,8 +96,8 @@ export const FilamentDetailsDialog = ({
             setProcessing(true);
 
             const filamentData: typeof filamentsTable.$inferInsert = {
-                manufacturer: values.manufacturer,
                 type: values.type,
+                manufacturer: values.manufacturer,
                 spoolType: values.spoolType,
                 name: values.name,
                 color: values.color,

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import {Filament, SpoolTypes} from "@/db/schema";
+import {Filament, filamentsTable, SpoolTypes} from "@/db/schema";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -18,4 +18,11 @@ export function calculateRemainingFilament(filament: Filament): number {
     const filamentWeight = rawFilamentWeight(filament)
     const filamentFullWeight = SpoolTypes[filament.spoolType ?? 0].filamentWeight ?? 0
     return filamentWeight / filamentFullWeight * 100
+}
+
+export function addFilamentId(filament: typeof filamentsTable.$inferInsert, filamentId: number) {
+    return {
+        id: filamentId,
+        ...filament
+    }
 }

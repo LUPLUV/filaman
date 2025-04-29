@@ -1,4 +1,4 @@
-import {integer, pgTable, timestamp, uuid, varchar} from "drizzle-orm/pg-core";
+import {integer, json, pgTable, timestamp, uuid, varchar} from "drizzle-orm/pg-core";
 
 export type Filament = typeof filamentsTable.$inferSelect;
 
@@ -67,3 +67,13 @@ export const filamentsTable = pgTable("filaments", {
     rfid1: varchar({length: 255}),
     rfid2: varchar({length: 255}),
 });
+
+export const auditLogTable = pgTable("audit_log", {
+    id: integer().primaryKey().generatedAlwaysAsIdentity(),
+    action: varchar({length: 255}),
+    rowId: integer(),
+    oldValues: json(),
+    newValues: json(),
+    userId: integer(),
+    createdAt: timestamp().defaultNow().notNull(),
+})
