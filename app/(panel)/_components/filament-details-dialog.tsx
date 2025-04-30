@@ -72,7 +72,7 @@ export const FilamentDetailsDialog = ({
             defaultValues: {
                 type: filament.type || undefined,
                 manufacturer: filament.manufacturer || "",
-                spoolType: filament.spoolType || undefined,
+                spoolType: filament.spoolType ?? undefined,
                 name: filament.name || undefined,
                 color: filament.color || undefined,
                 colorHex: filament.colorHex?.length ?? 0 > 0 ? filament.colorHex ?? "#ffffff" : "#ffffff",
@@ -179,11 +179,11 @@ export const FilamentDetailsDialog = ({
                                     name="spoolType"
                                     render={({field}) => (
                                         <FormItem>
-                                            <FormLabel>Spulentyp</FormLabel>
+                                            <FormLabel>Spulentyp {field.value}</FormLabel>
                                             <FormControl>
                                                 <Select
                                                     onValueChange={field.onChange}
-                                                    value={field.value?.toString() ?? undefined}
+                                                    value={field.value?.toString()}
                                                     disabled={processing}
                                                 >
                                                     <SelectTrigger>
