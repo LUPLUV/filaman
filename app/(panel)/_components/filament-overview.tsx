@@ -79,16 +79,16 @@ export const FilamentOverview = () => {
             </div>
             {view === "cards" && (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredFilaments().map((filament, index) => (
-                        <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
+                    {filteredFilaments().map((filament) => (
+                        <FilamentCard key={filament.id} filament={filament} onUpdate={onUpdate}
                                       showButtons size="lg"/>
                     ))}
                 </div>
             )}
             {view === "cardsmd" && (
                 <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {filteredFilaments().map((filament, index) => (
-                        <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
+                    {filteredFilaments().map((filament) => (
+                        <FilamentCard key={filament.id} filament={filament} onUpdate={onUpdate}
                                       size="md"/>
                     ))}
                 </div>
@@ -101,14 +101,14 @@ export const FilamentOverview = () => {
                     <h2 className="text-4xl font-bold">PLA</h2>
                     <h2 className="text-4xl font-bold">PETG</h2>
                     <div className="flex flex-wrap gap-4">
-                        {filteredFilaments().filter((filament) => filament.type === "PLA").map((filament, index) => (
-                            <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
+                        {filteredFilaments().filter((filament) => filament.type === "PLA").map((filament) => (
+                            <FilamentCard key={filament.id} filament={filament} onUpdate={onUpdate}
                                           size="sm"/>
                         ))}
                     </div>
                     <div className="flex flex-wrap gap-4">
-                        {filteredFilaments().filter((filament) => filament.type === "PETG").map((filament, index) => (
-                            <FilamentCard key={index} filament={filament} onUpdate={onUpdate}
+                        {filteredFilaments().filter((filament) => filament.type === "PETG").map((filament) => (
+                            <FilamentCard key={filament.id} filament={filament} onUpdate={onUpdate}
                                           size="sm"/>
                         ))}
                     </div>
