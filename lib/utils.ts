@@ -17,7 +17,8 @@ export function rawFilamentWeight(filament: Filament): number {
 export function calculateRemainingFilament(filament: Filament): number {
     const filamentWeight = rawFilamentWeight(filament)
     const filamentFullWeight = SpoolTypes[filament.spoolType ?? 0].filamentWeight ?? 0
-    return filamentWeight / filamentFullWeight * 100
+    const percentage = filamentWeight / filamentFullWeight * 100
+    return percentage >= 98 ? 100 : percentage < 0 ? 0 : percentage
 }
 
 export function addFilamentId(filament: typeof filamentsTable.$inferInsert, filamentId: number) {
