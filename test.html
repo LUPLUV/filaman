@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Böhm & Müller - Roll-up Banner Entwurf</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* Basis-Reset für die Browser-Ansicht */
+        body {
+            background-color: #2a2a2a;
+            /* Dunkler Hintergrund, damit das Banner leuchtet */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+        }
+
+        /* * DAS BANNER 
+         * Maßstab 85cm x 200cm = Aspect Ratio 85/200.
+         * Es skaliert sich dynamisch anhand der Browserhöhe.
+         */
+        .rollup-banner {
+            background-color: #ffffff;
+            height: 90vh;
+            /* 90% der Bildschirmhöhe */
+            width: calc(90vh * (85 / 200));
+            /* Exakte Proportion berechnen */
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+
+            /* Subtiles Tech-Gitter im Hintergrund (Blueprint-Look) */
+            background-image:
+                linear-gradient(#f4f6f8 1px, transparent 1px),
+                linear-gradient(90deg, #f4f6f8 1px, transparent 1px);
+            background-size: 8% 8%;
+            /* Skaliert das Gitter mit */
+        }
+
+        /* AKZENTE & FARBEN */
+        .teal-accent {
+            color: #007B8F;
+            /* Seriöses B2B Teal/Blaugrün */
+        }
+
+        /* 1. LOGO BEREICH (OBEN) */
+        .header {
+            padding: 10% 8% 5% 8%;
+            text-align: center;
+        }
+
+        .header img {
+            width: 30%;
+            /* Nimmt 70% der Banner-Breite ein */
+            height: auto;
+            /* Falls das Bild im Browser fehlt, machen wir einen Fallback */
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* 2. SLOGAN BEREICH */
+        .slogan-area {
+            padding: 0 10%;
+            text-align: center;
+            margin-bottom: 8%;
+        }
+
+        .slogan-area h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8vh;
+            /* Skaliert anhand der Höhe für perfekte Proportionen */
+            font-weight: 700;
+            line-height: 1.2;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            margin: 0;
+        }
+
+        .slogan-divider {
+            width: 40px;
+            height: 4px;
+            background-color: #007B8F;
+            margin: 4% auto;
+        }
+
+        /* 3. FOKUS-BLÖCKE (MITTE) */
+        .features-container {
+            flex-grow: 1;
+            /* Nimmt den restlichen Platz ein */
+            padding: 0 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6%;
+        }
+
+        .feature-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 4vh;
+            color: #007B8F;
+            margin-bottom: 2%;
+        }
+
+        .feature-title {
+            font-weight: 800;
+            font-size: 1.8vh;
+            color: #111827;
+            margin: 0 0 1% 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .feature-text {
+            font-weight: 400;
+            font-size: 1.4vh;
+            color: #4b5563;
+            margin: 0;
+            line-height: 1.5;
+            max-width: 90%;
+        }
+
+        /* 4. CALL TO ACTION & FOOTER (UNTEN) */
+        .footer-area {
+            background-color: #111827;
+            /* Dunkler Abschluss für Stabilität */
+            color: #ffffff;
+            text-align: center;
+            padding: 8% 5% 5% 5%;
+            position: relative;
+        }
+
+        /* Eine schräge Linie als Tech-Designelement als Übergang zum Footer */
+        .footer-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: #007B8F;
+        }
+
+        .cta-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5vh;
+            font-weight: 700;
+            color: #00f0ff;
+            /* Etwas knalligeres Neon-Teal für den CTA */
+            margin: 0 0 4% 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .contact-info {
+            font-size: 1.5vh;
+            font-weight: 300;
+            color: #9ca3af;
+            letter-spacing: 0.05em;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .contact-info strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="rollup-banner">
+
+        <div class="header">
+            <img src="../../../thornydesign/logo.png" alt="Böhm & Müller Digital Solutions Logo">
+        </div>
+
+        <div class="slogan-area">
+            <h1>Digitale <span class="teal-accent">Präzision</span>.<br>Ergebnisse für den <span
+                    class="teal-accent">Mittelstand</span>.</h1>
+            <div class="slogan-divider"></div>
+        </div>
+
+        <div class="features-container">
+
+            <div class="feature-block">
+                <i class="fa-solid fa-gears feature-icon"></i>
+                <h2 class="feature-title">Effiziente Prozesse</h2>
+                <p class="feature-text">Vom Papierchaos zu automatisierten Abläufen. Spürbare Entlastung für Ihr Büro.
+                </p>
+            </div>
+
+            <div class="feature-block">
+                <i class="fa-solid fa-shield-halved feature-icon"></i>
+                <h2 class="feature-title">Zukunftssichere IT</h2>
+                <p class="feature-text">Deutsche Server (Hetzner). 100% DSGVO-konform. Robuste Go & Next.js Architektur.
+                </p>
+            </div>
+
+            <div class="feature-block">
+                <i class="fa-solid fa-arrow-trend-up feature-icon"></i>
+                <h2 class="feature-title">Nachhaltige Skalierung</h2>
+                <p class="feature-text">Wir bauen Plattformen und Schnittstellen, die nahtlos mit Ihrem Betrieb wachsen.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="footer-area">
+            <h2 class="cta-text">Jetzt Digitalisieren.</h2>
+            <div class="contact-info">
+                <span><strong>boehmundmueller.de</strong></span>
+                <span>info@boehmundmueller.de</span>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
